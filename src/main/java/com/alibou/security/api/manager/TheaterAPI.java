@@ -1,10 +1,10 @@
 package com.alibou.security.api.manager;
 
+import com.alibou.security.entity.Theater;
 import com.alibou.security.exception.MissingRequiredFieldsException;
 import com.alibou.security.model.request.TheaterRequest;
 import com.alibou.security.model.response.TheaterResponse;
 import com.alibou.security.service.TheaterService;
-import com.alibou.security.entity.Theater;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
