@@ -1,12 +1,13 @@
 package com.alibou.security.api.user;
 
 import com.alibou.security.exception.EmailAlreadyInUseException;
+import com.alibou.security.exception.MissingRequiredFieldsException;
 import com.alibou.security.exception.PhoneAlreadyInUseException;
 import com.alibou.security.exception.UsernameAlreadyInUseException;
 import com.alibou.security.model.request.AuthenticationRequest;
+import com.alibou.security.model.request.RegisterRequest;
 import com.alibou.security.model.response.AuthenticationResponse;
 import com.alibou.security.service.AuthenticationService;
-import com.alibou.security.model.request.RegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +27,16 @@ public class AuthenticationAPI {
     private final AuthenticationService service;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@RequestBody(required = false) RegisterRequest request) {
         try {
+            if (request == null) {
+                throw new MissingRequiredFieldsException("Request body is missing");
+            }
             AuthenticationResponse response = service.register(request);
             return ResponseEntity.ok(response); // 200 OK
+        } catch (MissingRequiredFieldsException e) {
+            logger.error("Error during registration: Missing required fields");
+            return ResponseEntity.status(400).body("Missing required fields"); // 400 Bad Request
         } catch (EmailAlreadyInUseException e) {
             logger.error("Error during registration: Email already in use");
             return ResponseEntity.status(409).body("Email is already in use"); // 409 Conflict
@@ -39,17 +46,23 @@ public class AuthenticationAPI {
         } catch (PhoneAlreadyInUseException e) {
             logger.error("Error during registration: Phone number already in use");
             return ResponseEntity.status(409).body("Phone number is already in use"); // 409 Conflict
-        } catch (Exception e) {
-            logger.error("Unhandled error during registration: {}", e.getMessage());
-            return ResponseEntity.status(500).body("Internal server error"); // 500 Internal Server Error
+        } catch (IllegalArgumentException e) {
+            logger.error("Error during registration: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage()); // 400 Bad Request
         }
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<?> authenticate(@RequestBody(required = false) AuthenticationRequest request) {
         try {
+            if (request == null) {
+                throw new MissingRequiredFieldsException("Request body is missing");
+            }
             AuthenticationResponse response = service.authenticate(request);
             return ResponseEntity.ok(response); // 200 OK
+        } catch (MissingRequiredFieldsException e) {
+            logger.error("Error during authentication: Missing required fields");
+            return ResponseEntity.status(400).body("Missing required fields"); // 400 Bad Request
         } catch (Exception e) {
             logger.error("Error during authentication: {}", e.getMessage());
             return ResponseEntity.status(401).body("Unauthorized"); // 401 Unauthorized
@@ -71,6 +84,6 @@ public class AuthenticationAPI {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
         logger.error("Unhandled exception: {}", e.getMessage());
-        return ResponseEntity.status(500).body("Internal server error"); // 500 Internal Server Error
+        return ResponseEntity.status(500).body("Internal Server Error"); // 500 Internal Server Error
     }
 }
