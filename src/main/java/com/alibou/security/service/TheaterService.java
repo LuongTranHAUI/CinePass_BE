@@ -1,7 +1,8 @@
 package com.alibou.security.service;
 
-import com.alibou.security.model.request.TheaterRequest;
 import com.alibou.security.entity.Theater;
+import com.alibou.security.model.request.TheaterRequest;
+import com.alibou.security.model.response.TheaterResponse;
 import com.alibou.security.repository.TheaterRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -17,30 +18,42 @@ public class TheaterService {
     private static final Logger logger = LoggerFactory.getLogger(TheaterService.class);
     private final TheaterRepository repository;
 
-    public void save(TheaterRequest request) {
-        try {
-            var book = Theater.builder()
-                    .id(request.getId())
-                    .name(request.getName())
-                    .location(request.getLocation())
-                    .totalSeats(request.getTotalSeats())
-                    .build();
-            repository.save(book);
-            logger.info("Book saved successfully: {}", book);
-        } catch (Exception e) {
-            logger.error("Error saving book: {}", e.getMessage());
-            throw e;
-        }
+    public TheaterResponse add(TheaterRequest request) {
+        var theater = Theater.builder()
+                .id(request.getId())
+                .name(request.getName())
+                .location(request.getLocation())
+                .totalSeats(request.getTotalSeats())
+                .build();
+        repository.save(theater);
+        logger.info("Theater added successfully: {}", theater);
+        return null;
+    }
+
+    public TheaterResponse change(TheaterRequest request) {
+        var existingTheater = repository.findById(request.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Theater not found"));
+        var theater = Theater.builder()
+                .id(existingTheater.getId())
+                .name(request.getName())
+                .location(request.getLocation())
+                .totalSeats(request.getTotalSeats())
+                .build();
+        repository.save(theater);
+        logger.info("Theater updated successfully: {}", theater);
+        return null;
+    }
+
+    public void delete(Integer id) {
+        var existingTheater = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Theater not found"));
+        repository.deleteById(existingTheater.getId());
+        logger.info("Theater deleted successfully: {}", id);
     }
 
     public List<Theater> findAll() {
-        try {
-            List<Theater> books = repository.findAll();
-            logger.info("Books retrieved successfully");
-            return books;
-        } catch (Exception e) {
-            logger.error("Error retrieving books: {}", e.getMessage());
-            throw e;
-        }
+        List<Theater> theaters = repository.findAll();
+        logger.info("Theaters retrieved successfully");
+        return theaters;
     }
 }
