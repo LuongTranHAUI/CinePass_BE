@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "theaters")
 public class Theater {
 
     @Id

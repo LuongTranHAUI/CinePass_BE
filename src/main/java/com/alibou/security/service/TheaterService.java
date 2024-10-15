@@ -56,4 +56,16 @@ public class TheaterService {
         logger.info("Theaters retrieved successfully");
         return theaters;
     }
+
+    public Theater findById(Integer id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Theater not found"));
+    }
+
+    public TheaterResponse findByName(String name) {
+        var theater = repository.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("Theater not found"));
+        logger.info("Theater retrieved successfully: {}", name);
+        return null;
+    }
 }
