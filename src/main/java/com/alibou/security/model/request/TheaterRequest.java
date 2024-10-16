@@ -11,7 +11,7 @@ import lombok.*;
 public class TheaterRequest {
 
     @NotNull
-    private Integer id;
+    private Long id;
 
     @NotNull
     private String name;
@@ -20,6 +20,6 @@ public class TheaterRequest {
     private String location;
 
     @NotNull
-    private int totalSeats;
+    private String phone;
 
 }

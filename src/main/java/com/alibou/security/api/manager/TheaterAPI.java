@@ -34,7 +34,7 @@ public class TheaterAPI {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findTheaterById(@PathVariable Integer id) {
+    public ResponseEntity<?> findTheaterById(@PathVariable Long id) {
         try {
             Theater theater = service.findById(id);
             logger.info("Retrieved theater successfully with ID: {}", id);
@@ -94,7 +94,7 @@ public class TheaterAPI {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTheater(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteTheater(@PathVariable Long id) {
         try {
             service.delete(id);
             logger.info("Deleted theater successfully with ID: {}", id);

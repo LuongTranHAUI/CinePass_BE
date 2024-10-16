@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -17,13 +18,20 @@ public class TheaterService {
 
     private static final Logger logger = LoggerFactory.getLogger(TheaterService.class);
     private final TheaterRepository repository;
+    private final UserService userService;
 
     public TheaterResponse add(TheaterRequest request) {
+        var existingTheater = repository.findById(request.getId());
+        if (existingTheater.isPresent()) {
+            throw new IllegalArgumentException("Theater available");
+        }
         var theater = Theater.builder()
                 .id(request.getId())
                 .name(request.getName())
                 .location(request.getLocation())
-                .totalSeats(request.getTotalSeats())
+                .phone(request.getPhone())
+                .createdBy(userService.getCurrentUserId())
+                .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
                 .build();
         repository.save(theater);
         logger.info("Theater added successfully: {}", theater);
@@ -37,14 +45,16 @@ public class TheaterService {
                 .id(existingTheater.getId())
                 .name(request.getName())
                 .location(request.getLocation())
-                .totalSeats(request.getTotalSeats())
+                .phone(request.getPhone())
+                .updatedBy(userService.getCurrentUserId())
+                .updatedAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
                 .build();
         repository.save(theater);
         logger.info("Theater updated successfully: {}", theater);
         return null;
     }
 
-    public void delete(Integer id) {
+    public void delete(Long id) {
         var existingTheater = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Theater not found"));
         repository.deleteById(existingTheater.getId());
@@ -57,7 +67,7 @@ public class TheaterService {
         return theaters;
     }
 
-    public Theater findById(Integer id) {
+    public Theater findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Theater not found"));
     }

@@ -26,7 +26,9 @@ public class Movie {
     private String genre;
     private String director;
     private String actor;
-    private Integer duration;
+
+    @Column(name = "run_time")
+    private Integer runTime; // in minutes
 
     @Column(columnDefinition = "TEXT")
     private String summary;
@@ -40,16 +42,16 @@ public class Movie {
     @Column(name = "release_date")
     private LocalDateTime releaseDate;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", updatable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @Column(name = "created_by")
+    @Column(name = "created_by", updatable = false)
     private Long createdBy;
 
-    @Column(name = "updated_by")
+    @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
 
     private Double rating;

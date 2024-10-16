@@ -31,8 +31,8 @@ public class Ticket {
     private Showtime showtime;
 
     @ManyToOne
-    @JoinColumn(name = "discount_id")
-    private Discount discount;
+    @JoinColumn(name = "discount_application_id")
+    private DiscountApplication discountApplication;
 
     @Column(name = "seat_number", nullable = false)
     private String seatNumber;
@@ -43,23 +43,21 @@ public class Ticket {
     @Column(name = "ticket_type", nullable = false)
     private String ticketType;
 
-    private BigDecimal price;
-
     @Column(name = "service_fee", nullable = false)
     private BigDecimal serviceFee = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", updatable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @Column(name = "created_by")
+    @Column(name = "created_by", updatable = false)
     private Long createdBy;
 
-    @Column(name = "updated_by")
+    @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
 }

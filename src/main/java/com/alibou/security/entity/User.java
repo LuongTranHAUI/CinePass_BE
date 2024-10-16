@@ -56,10 +56,10 @@ public class User implements UserDetails {
   @Column(name = "phone", unique = true)
   private String phone;
 
-  @Column(name = "created_at", nullable = false)
+  @Column(name = "created_at")
   private LocalDateTime createdAt = LocalDateTime.now();
 
-  @Column(name = "updated_at", nullable = false)
+  @Column(name = "updated_at")
   private LocalDateTime updatedAt = LocalDateTime.now();
 
   @Column(name = "created_by")
@@ -68,13 +68,13 @@ public class User implements UserDetails {
   @Column(name = "updated_by")
   private Long updatedBy;
 
-  @ManyToOne(fetch = FetchType.EAGER) // Changed to EAGER fetching
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "role_id")
   private Role role;
 
-  @Builder.Default
-  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-  private List<Token> tokens = List.of();
+   @Builder.Default
+   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+   private List<Token> tokens = List.of(); // Sử dụng ManyToOne nếu cần
 
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
   private Set<Ticket> tickets;
@@ -113,9 +113,5 @@ public class User implements UserDetails {
   public boolean isCredentialsNonExpired() {
     return true;
   }
-
-  @Override
-  public boolean isEnabled() {
-    return true;
-  }
 }
+

@@ -33,18 +33,18 @@ public class Discount {
     @Column(name = "expiration_date", nullable = false)
     private LocalDateTime expirationDate;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", updatable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @Column(name = "created_by")
+    @Column(name = "created_by", updatable = false)
     private Long createdBy;
 
-    @Column(name = "updated_by")
+    @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
 
     @OneToMany(mappedBy = "discount")
-    private Set<Ticket> tickets;
+    private Set<DiscountApplication> discountApplications;
 }

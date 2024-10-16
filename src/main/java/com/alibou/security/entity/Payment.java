@@ -1,38 +1,33 @@
 package com.alibou.security.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.sql.Timestamp;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "theaters")
-public class Theater {
-
+@Table(name = "payments")
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    private String name;
+    @Column(name = "transaction_id", nullable = false)
+    private String transactionId;
 
-    private String location;
+    @Column(name = "amount", nullable = false)
+    private BigDecimal amount; // Tổng giá trị của giao dịch
 
-    @Column(name = "phone")
-    private String phone;
+    @Column(name = "currency")
+    private String currency; // Thêm trường currency
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -46,13 +41,11 @@ public class Theater {
     @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
 
-    @OneToMany(mappedBy = "theater")
-    private Set<Hall> halls;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @OneToMany(mappedBy = "theater")
-    private Set<Showtime> showtimes;
-
-    @CreatedDate
-    @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createAt;
+    @ManyToOne
+    @JoinColumn(name = "payment_method_id")
+    private PaymentMethod paymentMethod;
 }

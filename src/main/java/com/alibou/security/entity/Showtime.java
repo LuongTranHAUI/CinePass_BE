@@ -35,6 +35,12 @@ public class Showtime {
     @Column(name = "show_time", nullable = false)
     private LocalDateTime showTime;
 
+    @Column(name = "ticket_capacity")
+    private Integer ticketCapacity;
+
     @OneToMany(mappedBy = "showtime")
     private Set<Ticket> tickets;
+
+    @OneToMany(mappedBy = "showtime")
+    private Set<SeatReservation> seatReservations;
 }

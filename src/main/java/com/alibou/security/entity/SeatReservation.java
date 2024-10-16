@@ -13,18 +13,22 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "notifications")
-public class Notification {
+@Table(name = "seat_reservations")
+public class SeatReservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "showtime_id")
+    private Showtime showtime;
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(columnDefinition = "TEXT")
-    private String message;
+    @Column(name = "seat_number", nullable = false)
+    private String seatNumber;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();

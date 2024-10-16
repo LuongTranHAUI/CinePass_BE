@@ -1,38 +1,38 @@
 package com.alibou.security.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.sql.Timestamp;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "theaters")
-public class Theater {
-
+@Table(name = "snacks")
+public class Snack {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
     private String name;
 
-    private String location;
+    private String description;
 
-    @Column(name = "phone")
-    private String phone;
+    @Column(name = "price")
+    private BigDecimal price;
+
+    @Column(name = "type")
+    private String type;
+
+    @Column(name = "drink_id")
+    private Long drinkId;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -46,13 +46,6 @@ public class Theater {
     @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
 
-    @OneToMany(mappedBy = "theater")
-    private Set<Hall> halls;
-
-    @OneToMany(mappedBy = "theater")
-    private Set<Showtime> showtimes;
-
-    @CreatedDate
-    @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createAt;
+    @Column(name = "combo_price")
+    private BigDecimal comboPrice;
 }
