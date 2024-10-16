@@ -11,9 +11,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Date;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -25,11 +26,18 @@ public class User implements UserDetails {
 
   @Id
   @GeneratedValue
-  private Integer id;
+  private Long id;
 
   @NotBlank
   @Column(name = "username", nullable = false, unique = true)
   private String username;
+
+  @Column(nullable = false)
+  private String password;
+
+  @Email
+  @Column(nullable = false, unique = true)
+  private String email;
 
   @Column(name = "status", columnDefinition = "BIT DEFAULT 1")
   private boolean status;
@@ -39,36 +47,37 @@ public class User implements UserDetails {
     this.status = true;
   }
 
+  @Column(name = "full_name", nullable = false)
+  private String fullName;
+
   @Column(name = "date_of_birth", nullable = false)
   private Date dateOfBirth;
 
   @Column(name = "phone", unique = true)
   private String phone;
 
-  @Column(name = "full_name", nullable = false)
-  private String fullName;
+  @Column(name = "created_at", nullable = false)
+  private LocalDateTime createdAt = LocalDateTime.now();
 
-  @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
-  private Timestamp createdAt;
+  @Column(name = "updated_at", nullable = false)
+  private LocalDateTime updatedAt = LocalDateTime.now();
 
-  @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
-  private Timestamp updatedAt;
+  @Column(name = "created_by")
+  private Long createdBy;
+
+  @Column(name = "updated_by")
+  private Long updatedBy;
 
   @ManyToOne(fetch = FetchType.EAGER) // Changed to EAGER fetching
   @JoinColumn(name = "role_id")
   private Role role;
 
-  @Email
-  @NotBlank
-  @Column(unique = true)
-  private String email;
-
-  @NotBlank
-  private String password;
-
   @Builder.Default
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
   private List<Token> tokens = List.of();
+
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+  private Set<Ticket> tickets;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

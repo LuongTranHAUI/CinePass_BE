@@ -70,8 +70,8 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .dateOfBirth(Date.valueOf(request.getYear() + "-" + request.getMonth() + "-" + request.getDay()))
                 .phone(request.getPhone())
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
+                .updatedAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
                 .role(userRole)
                 .build();
         var savedUser = repository.save(user);
@@ -117,7 +117,7 @@ public class AuthenticationService {
     }
 
     private void revokeAllUserTokens(User user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+        var validUserTokens = tokenRepository.findAllValidTokenByUser(Math.toIntExact(user.getId()));
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {
