@@ -79,6 +79,9 @@ public class User implements UserDetails {
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
   private Set<Ticket> tickets;
 
+  @OneToMany(mappedBy = "user")
+  private Set<DiscountApplication> discountApplications;
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     if (role == null) {

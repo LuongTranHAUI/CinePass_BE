@@ -21,10 +21,6 @@ public class Hall {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "theater_id")
-    private Theater theater;
-
     private String name;
 
     @Column(name = "seat_capacity")
@@ -32,6 +28,12 @@ public class Hall {
 
     @Enumerated(EnumType.STRING)
     private HallStatus status;
+
+    @Column(name = "max_capacity")
+    private Integer maxCapacity;
+
+    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Seat> seats;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -45,12 +47,10 @@ public class Hall {
     @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
 
+    @ManyToOne
+    @JoinColumn(name = "theater_id")
+    private Theater theater;
+
     @OneToMany(mappedBy = "hall")
     private Set<Showtime> showtimes;
-
-    @Column(name = "max_capacity")
-    private Integer maxCapacity;
-
-    @Column(columnDefinition = "TEXT")
-    private String seatingPlanJson; // Thêm trường JSON
 }

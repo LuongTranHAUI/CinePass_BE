@@ -1,5 +1,6 @@
 package com.alibou.security.model.request;
 
+import com.alibou.security.enums.HallStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -8,14 +9,17 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TheaterRequest {
+public class HallRequest {
 
     private Long id;
     @NotNull
     private String name;
     @NotNull
-    private String location;
+    private Integer seatCapacity;
     @NotNull
-    private String phone;
-
+    private Integer maxCapacity;
+    @NotNull
+    private Long theaterId;
+    @NotNull
+    private HallStatus status;
 }

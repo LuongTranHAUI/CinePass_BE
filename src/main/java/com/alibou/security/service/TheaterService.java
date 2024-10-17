@@ -21,12 +21,11 @@ public class TheaterService {
     private final UserService userService;
 
     public TheaterResponse add(TheaterRequest request) {
-        var existingTheater = repository.findById(request.getId());
+        var existingTheater = repository.findByName(request.getName());
         if (existingTheater.isPresent()) {
             throw new IllegalArgumentException("Theater available");
         }
         var theater = Theater.builder()
-                .id(request.getId())
                 .name(request.getName())
                 .location(request.getLocation())
                 .phone(request.getPhone())
