@@ -8,12 +8,14 @@ import com.alibou.security.model.request.AuthenticationRequest;
 import com.alibou.security.model.request.RegisterRequest;
 import com.alibou.security.model.response.AuthenticationResponse;
 import com.alibou.security.service.AuthenticationService;
+import com.alibou.security.service.LogoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,6 +27,7 @@ public class AuthenticationAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationAPI.class);
     private final AuthenticationService service;
+    private final LogoutService logoutService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody(required = false) RegisterRequest request) {
@@ -78,6 +81,11 @@ public class AuthenticationAPI {
             logger.error("Error during token refresh: {}", e.getMessage());
             return ResponseEntity.status(401).body("Unauthorized"); // 401 Unauthorized
         }
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        logoutService.logout(request, response, authentication);
     }
 
     // Global exception handler

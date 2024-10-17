@@ -12,5 +12,5 @@ public class TheaterResponse {
     private Integer id;
     private String name;
     private String location;
-    private int totalSeats;
+    private String phone;
 }

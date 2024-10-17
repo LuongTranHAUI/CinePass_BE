@@ -4,6 +4,6 @@ public enum TicketStatus {
     PAID,
     PENDING,
     CANCELED,
-    REFUNDED,
-    AVAILABLE
+    REFUNDED_PENDING,
+    REFUNDED_COMPLETED
 }
