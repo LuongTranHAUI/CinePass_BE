@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,13 +23,25 @@ public class Seat {
     private Long id;
 
     @Column(name = "seat_row")
-    private String seatRow;
+    private Character seatRow;
 
     @Column(name = "seat_number")
-    private String seatNumber;
+    private Integer seatNumber;
 
     @Enumerated(EnumType.STRING)
     private SeatStatus status;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_at", updatable = false)
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @Column(name = "created_by", updatable = false)
+    private Long createdBy;
+
+    @Column(name = "updated_by", updatable = false)
+    private Long updatedBy;
 
     @ManyToOne
     @JoinColumn(name = "hall_id")

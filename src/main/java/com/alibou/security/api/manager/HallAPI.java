@@ -21,7 +21,7 @@ public class HallAPI {
     @GetMapping
     public ResponseEntity<List<Hall>> findAllHalls() {
         try {
-            List<Hall> halls = (List<Hall>) service.findAll();
+            List<Hall> halls = service.findAll();
             logger.info("Retrieved all halls successfully");
             return ResponseEntity.ok(halls); // 200 OK
         } catch (Exception e) {

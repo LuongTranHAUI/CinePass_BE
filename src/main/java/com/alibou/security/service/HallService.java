@@ -58,10 +58,8 @@ public class HallService {
         repository.deleteById(existingHall.getId());
     }
 
-    public Hall findAll() {
-        List<Hall> halls = repository.findAll();
-        logger.info("Halls retrieved successfully");
-        return (Hall) halls;
+    public List<Hall> findAll() {
+        return repository.findAll();
     }
 
     public Hall findById(Long id) {
