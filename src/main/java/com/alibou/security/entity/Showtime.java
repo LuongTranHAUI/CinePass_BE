@@ -37,7 +37,4 @@ public class Showtime {
 
     @OneToMany(mappedBy = "showtime")
     private Set<Ticket> tickets;
-
-    @OneToMany(mappedBy = "showtime")
-    private Set<SeatReservation> seatReservations;
 }

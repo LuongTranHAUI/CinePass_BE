@@ -24,97 +24,97 @@ import java.util.Set;
 @Table(name = "users")
 public class User implements UserDetails {
 
-  @Id
-  @GeneratedValue
-  private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-  @NotBlank
-  @Column(name = "username", nullable = false, unique = true)
-  private String username;
+    @NotBlank
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
-  @Column(nullable = false)
-  private String password;
+    @Column(nullable = false)
+    private String password;
 
-  @Email
-  @Column(nullable = false, unique = true)
-  private String email;
+    @Email
+    @Column(nullable = false, unique = true)
+    private String email;
 
-  @Column(name = "status", columnDefinition = "BIT DEFAULT 1")
-  private boolean status;
+    @Column(name = "status", columnDefinition = "BIT DEFAULT 1")
+    private boolean status;
 
-  @PrePersist
-  public void prePersist() {
-    this.status = true;
-  }
-
-  @Column(name = "full_name", nullable = false)
-  private String fullName;
-
-  @Column(name = "date_of_birth", nullable = false)
-  private Date dateOfBirth;
-
-  @Column(name = "phone", unique = true)
-  private String phone;
-
-  @Column(name = "created_at")
-  private LocalDateTime createdAt = LocalDateTime.now();
-
-  @Column(name = "updated_at")
-  private LocalDateTime updatedAt = LocalDateTime.now();
-
-  @Column(name = "created_by")
-  private Long createdBy;
-
-  @Column(name = "updated_by")
-  private Long updatedBy;
-
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "role_id")
-  private Role role;
-
-   @Builder.Default
-   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-   private List<Token> tokens = List.of(); // Sử dụng ManyToOne nếu cần
-
-  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-  private Set<Ticket> tickets;
-
-  @OneToMany(mappedBy = "user")
-  private Set<DiscountApplication> discountApplications;
-
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    if (role == null) {
-      Role defaultRole = new Role();
-      defaultRole.setName("USER");
-      return defaultRole.getAuthorities();
+    @PrePersist
+    public void prePersist() {
+        this.status = true;
     }
-    return role.getAuthorities();
-  }
 
-  @Override
-  public String getPassword() {
-    return password;
-  }
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
 
-  @Override
-  public String getUsername() {
-    return email;
-  }
+    @Column(name = "date_of_birth", nullable = false)
+    private Date dateOfBirth;
 
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
+    @Column(name = "phone", unique = true)
+    private String phone;
 
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @Column(name = "created_by")
+    private Long createdBy;
+
+    @Column(name = "updated_by")
+    private Long updatedBy;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Token> tokens = List.of(); // Sử dụng ManyToOne nếu cần
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<Ticket> tickets;
+
+    @OneToMany(mappedBy = "user")
+    private Set<DiscountApplication> discountApplications;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (role == null) {
+            Role defaultRole = new Role();
+            defaultRole.setName("USER");
+            return defaultRole.getAuthorities();
+        }
+        return role.getAuthorities();
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 }
 
