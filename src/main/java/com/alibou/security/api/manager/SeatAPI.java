@@ -21,7 +21,7 @@ public class SeatAPI {
     @GetMapping
     public ResponseEntity<List<Seat>> findAllSeats() {
         try {
-            List<Seat> seats = (List<Seat>) service.findAll();
+            List<Seat> seats = service.findAll();
             logger.info("Retrieved all seats successfully");
             return ResponseEntity.ok(seats); // 200 OK
         } catch (Exception e) {
@@ -29,18 +29,6 @@ public class SeatAPI {
             return ResponseEntity.status(500).body(null); // 500 Internal Server Error
         }
     }
-
-//    @PostMapping
-//    public ResponseEntity<?> addSeat(@RequestBody SeatRequest request) {
-//        try {
-//            service.add(request);
-//            logger.info("Seat added successfully: {}", request);
-//            return ResponseEntity.ok(request); // 200 OK
-//        } catch (Exception e) {
-//            logger.error("Failed to add seat: {}", e.getMessage());
-//            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
-//        }
-//    }
 
     @PostMapping
     public ResponseEntity<?> generateSeats(@RequestBody SeatRequest request) {

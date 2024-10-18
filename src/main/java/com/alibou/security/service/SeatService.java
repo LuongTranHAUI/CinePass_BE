@@ -22,23 +22,6 @@ public class SeatService {
     private final UserService userService;
     private final HallService hallService;
 
-//    public void add(SeatRequest request) {
-//        var maxSeat = hallService.findById(request.getHallId()).getSeatCapacity();
-//        if (request.getSeatNumber() > maxSeat) {
-//            throw new IllegalArgumentException("Seat number exceeds hall capacity");
-//        }
-//        var seat = Seat.builder()
-//                .seatRow(request.getSeatRow())
-//                .seatNumber(request.getSeatNumber())
-//                .status(request.getStatus())
-//                .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
-//                .createdBy(userService.getCurrentUserId())
-//                .hall(hallService.findById(request.getHallId()))
-//                .build();
-//        repository.save(seat);
-//        LOGGER.info("Seat added successfully: {}", seat);
-//    }
-
     public void change(SeatRequest request) {
         var existingSeat = repository.findById(request.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Seat not found"));
@@ -91,10 +74,5 @@ public class SeatService {
         List<Seat> seats = repository.findAll();
         LOGGER.info("Seats retrieved successfully");
         return seats;
-    }
-
-    public Seat findById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Seat not found"));
     }
 }
