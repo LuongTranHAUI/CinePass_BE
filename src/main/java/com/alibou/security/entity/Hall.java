@@ -29,12 +29,6 @@ public class Hall {
     @Enumerated(EnumType.STRING)
     private HallStatus status;
 
-    @Column(name = "max_capacity")
-    private Integer maxCapacity;
-
-    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Seat> seats;
-
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 

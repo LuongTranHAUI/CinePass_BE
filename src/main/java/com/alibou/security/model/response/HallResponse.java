@@ -10,9 +10,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class HallResponse {
 
+    private Long id;
     private String name;
     private Integer seatCapacity;
-    private Integer maxCapacity;
     private Long theaterId;
     private HallStatus status;
 }

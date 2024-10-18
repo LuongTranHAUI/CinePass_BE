@@ -27,7 +27,6 @@ public class HallService {
         }
         var hall = Hall.builder()
                 .name(request.getName())
-                .maxCapacity(request.getMaxCapacity())
                 .seatCapacity(request.getSeatCapacity())
                 .status(request.getStatus())
                 .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
@@ -44,7 +43,6 @@ public class HallService {
         var hall = Hall.builder()
                 .id(existingHall.getId())
                 .name(request.getName())
-                .maxCapacity(request.getMaxCapacity())
                 .seatCapacity(request.getSeatCapacity())
                 .status(request.getStatus())
                 .updatedAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
@@ -58,10 +56,10 @@ public class HallService {
         repository.deleteById(existingHall.getId());
     }
 
-    public Hall findAll() {
+    public List<Hall> findAll() {
         List<Hall> halls = repository.findAll();
         logger.info("Halls retrieved successfully");
-        return (Hall) halls;
+        return halls;
     }
 
     public Hall findById(Long id) {

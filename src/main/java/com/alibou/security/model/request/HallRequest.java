@@ -17,8 +17,6 @@ public class HallRequest {
     @NotNull
     private Integer seatCapacity;
     @NotNull
-    private Integer maxCapacity;
-    @NotNull
     private Long theaterId;
     @NotNull
     private HallStatus status;
