@@ -1,6 +1,7 @@
 package com.alibou.security.service;
 
 import com.alibou.security.entity.Discount;
+import com.alibou.security.entity.DiscountApplication;
 import com.alibou.security.model.request.DiscountRequest;
 import com.alibou.security.repository.DiscountRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,8 @@ public class DiscountService {
     private static final Logger logger = Logger.getLogger(DiscountService.class.getName());
     private final DiscountRepository repository;
     private final UserService userService;
+    private final DiscountApplicationService discountApplicationService;
+
 
     public void add(DiscountRequest request) {
         var discount = Discount.builder()
@@ -28,6 +31,14 @@ public class DiscountService {
                 .createdBy(userService.getCurrentUserId())
                 .build();
         repository.save(discount);
+
+        var discountApplication = DiscountApplication.builder()
+                .discount(discount)
+                .user(userService.getCurrentUser())
+                .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
+                .createdBy(userService.getCurrentUserId())
+                .build();
+        discountApplicationService.createDiscountApplication(discountApplication);
     }
 
     public void change(DiscountRequest request) {

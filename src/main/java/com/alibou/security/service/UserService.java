@@ -54,4 +54,9 @@ public class UserService {
         var user = (User) authentication.getPrincipal();
         return user.getId();
     }
+
+    public User getCurrentUser() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (User) authentication.getPrincipal();
+    }
 }

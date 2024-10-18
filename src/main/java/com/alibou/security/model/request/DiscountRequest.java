@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.sql.Date;
 
 @Getter
 @Setter
@@ -20,5 +20,5 @@ public class DiscountRequest {
     @NotNull
     private BigDecimal discountPercent;
     @NotNull
-    private LocalDateTime expirationDate;
+    private Date expirationDate;
 }

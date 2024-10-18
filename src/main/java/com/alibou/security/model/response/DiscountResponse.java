@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.sql.Date;
 
 @Data
 @Builder
@@ -15,5 +15,5 @@ public class DiscountResponse {
     private String code;
     private String description;
     private BigDecimal discountPercent;
-    private LocalDateTime expirationDate;
+    private Date expirationDate;
 }
