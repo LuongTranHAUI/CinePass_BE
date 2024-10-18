@@ -1,5 +1,6 @@
 package com.alibou.security.entity;
 
+import com.alibou.security.enums.NotificationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +20,11 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "type")
+    private String type;
+
+    @Enumerated(EnumType.STRING)
+    private NotificationStatus status;
 
     @Column(columnDefinition = "TEXT")
     private String message;
@@ -37,4 +40,8 @@ public class Notification {
 
     @Column(name = "updated_by")
     private Long updatedBy;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
