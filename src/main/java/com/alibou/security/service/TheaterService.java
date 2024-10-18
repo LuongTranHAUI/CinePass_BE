@@ -20,7 +20,6 @@ public class TheaterService {
 
     public TheaterResponse add(TheaterRequest request) {
         var theater = Theater.builder()
-                .id(request.getId())
                 .name(request.getName())
                 .location(request.getLocation())
                 .totalSeats(request.getTotalSeats())
