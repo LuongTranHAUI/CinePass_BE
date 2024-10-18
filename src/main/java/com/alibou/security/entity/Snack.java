@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -20,7 +21,7 @@ public class Snack {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     private String description;
@@ -30,9 +31,6 @@ public class Snack {
 
     @Column(name = "type")
     private String type;
-
-    @Column(name = "drink_id")
-    private Long drinkId;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -46,6 +44,6 @@ public class Snack {
     @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
 
-    @Column(name = "combo_price")
-    private BigDecimal comboPrice;
+    @ManyToMany(mappedBy = "snacks")
+    private List<Ticket> tickets;
 }

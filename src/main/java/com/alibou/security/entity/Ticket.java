@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -56,4 +57,12 @@ public class Ticket {
 
     @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
+
+    @ManyToMany
+    @JoinTable(
+            name = "ticket_snacks",
+            joinColumns = @JoinColumn(name = "ticket_id"),
+            inverseJoinColumns = @JoinColumn(name = "snack_id")
+    )
+    private List<Snack> snacks;
 }
