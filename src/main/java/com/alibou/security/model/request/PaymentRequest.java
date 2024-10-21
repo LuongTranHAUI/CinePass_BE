@@ -1,6 +1,5 @@
 package com.alibou.security.model.request;
 
-import com.alibou.security.entity.PaymentMethod;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -19,7 +18,7 @@ public class PaymentRequest {
     @NotNull
     private String currency;
     @NotNull
-    private PaymentMethod paymentMethodId;
+    private Long paymentMethodId;
     private String bankCode;
     private String language;
     private String ipAddress;

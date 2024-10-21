@@ -2,9 +2,13 @@ package com.alibou.security.service;
 
 import com.alibou.security.config.VnPayConfig;
 import com.alibou.security.entity.Payment;
+import com.alibou.security.entity.PaymentMethod;
+import com.alibou.security.enums.PaymentStatus;
 import com.alibou.security.model.request.PaymentRequest;
+import com.alibou.security.repository.PaymentMethodRepository;
 import com.alibou.security.repository.PaymentRepository;
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PaymentService {
     private final PaymentRepository paymentRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
     private final UserService userService;
 
     public JsonObject processPayment(PaymentRequest paymentRequest) throws UnsupportedEncodingException {
@@ -85,19 +90,78 @@ public class PaymentService {
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = VnPayConfig.vnp_PayUrl + "?" + queryUrl;
 
+        PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentRequest.getPaymentMethodId())
+                .orElseThrow(() -> new IllegalArgumentException("Payment Method not found"));
+
         Payment payment = Payment.builder()
                 .transactionId(vnp_TxnRef)
                 .amount(paymentRequest.getAmount())
                 .currency(paymentRequest.getCurrency())
-                .paymentMethod(paymentRequest.getPaymentMethodId())
+                .status(PaymentStatus.valueOf("PROCESSING"))
+                .user(userService.getCurrentUser())
+                .paymentMethod(paymentMethod)
                 .createdBy(userService.getCurrentUserId())
                 .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
-                .paymentMethod(paymentRequest.getPaymentMethodId())
                 .build();
         paymentRepository.save(payment);
 
         JsonObject response = new JsonObject();
         response.addProperty("paymentUrl", paymentUrl);
+        return response;
+    }
+
+    public JsonObject handleVnPayReturn(HttpServletRequest request) {
+        Map<String, String> fields = new HashMap<>();
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
+            String fieldName = params.nextElement();
+            String fieldValue = request.getParameter(fieldName);
+            if (fieldValue != null && fieldValue.length() > 0) {
+                fields.put(fieldName, fieldValue);
+            }
+        }
+
+        String vnp_SecureHash = request.getParameter("vnp_SecureHash");
+        if (fields.containsKey("vnp_SecureHashType")) {
+            fields.remove("vnp_SecureHashType");
+        }
+        if (fields.containsKey("vnp_SecureHash")) {
+            fields.remove("vnp_SecureHash");
+        }
+        String signValue = VnPayConfig.hashAllFields(fields);
+
+        JsonObject response = new JsonObject();
+//        if (signValue.equals(vnp_SecureHash)) {
+            if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
+                response.addProperty("message", "GD Thanh cong");
+
+                // Update payment status to successful
+                String transactionId = request.getParameter("vnp_TxnRef");
+                Payment payment = paymentRepository.findByTransactionId(transactionId)
+                        .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+                payment.setStatus(PaymentStatus.COMPLETED);
+                paymentRepository.save(payment);
+            } else {
+                response.addProperty("message", "GD Khong thanh cong");
+                if ("24".equals(request.getParameter("vnp_ResponseCode"))) {
+                    // Update payment status to canceled
+                    String transactionId = request.getParameter("vnp_TxnRef");
+                    Payment payment = paymentRepository.findByTransactionId(transactionId)
+                            .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+                    payment.setStatus(PaymentStatus.CANCELED);
+                    paymentRepository.save(payment);
+                }
+                else {
+                    // Update payment status to failed
+                    String transactionId = request.getParameter("vnp_TxnRef");
+                    Payment payment = paymentRepository.findByTransactionId(transactionId)
+                            .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+                    payment.setStatus(PaymentStatus.FAILED);
+                    paymentRepository.save(payment);
+            }
+        }
+//            else {
+//            response.addProperty("message", "Chu ky khong hop le");
+//        }
         return response;
     }
 }

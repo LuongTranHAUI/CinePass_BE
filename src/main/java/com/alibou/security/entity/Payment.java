@@ -1,5 +1,6 @@
 package com.alibou.security.entity;
 
+import com.alibou.security.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,9 @@ public class Payment {
     @Column(name = "currency")
     private String currency; // Thêm trường currency
 
+    @Column(name = "status")
+    private PaymentStatus status;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -46,6 +50,6 @@ public class Payment {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "payment_method_id")
+    @JoinColumn(name = "payment_method_id", nullable = false)
     private PaymentMethod paymentMethod;
 }
