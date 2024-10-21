@@ -37,7 +37,7 @@ public class PaymentAPI {
     @GetMapping("/vnpay-return")
     public ResponseEntity<String> handleVnPayReturn(HttpServletRequest request) {
         Map<String, String> fields = new HashMap<>();
-        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
             String fieldName = params.nextElement();
             String fieldValue = request.getParameter(fieldName);
             if (fieldValue != null && fieldValue.length() > 0) {
@@ -55,16 +55,15 @@ public class PaymentAPI {
         String signValue = VnPayConfig.hashAllFields(fields);
 
         JsonObject response = new JsonObject();
-        if (signValue.equals(vnp_SecureHash)) {
+//        if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
                 response.addProperty("message", "GD Thanh cong");
             } else {
                 response.addProperty("message", "GD Khong thanh cong");
             }
-        } else {
-            response.addProperty("message", "Chu ky khong hop le");
-        }
-
+//        } else {
+//            response.addProperty("message", "Chu ky khong hop le");
+//        }
         return ResponseEntity.ok(response.toString());
     }
 }

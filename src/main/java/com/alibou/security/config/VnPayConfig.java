@@ -14,8 +14,8 @@ import java.util.*;
 @Configuration
 public class VnPayConfig {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-//    public static String vnp_ReturnUrl = "http://localhost:8080/vnpay_jsp/vnpay_return.jsp";
-public static String vnp_ReturnUrl  = "http://localhost:8080/api/users/payments/vnpay-return";
+    //    public static String vnp_ReturnUrl = "http://localhost:8080/vnpay_jsp/vnpay_return.jsp";
+    public static String vnp_ReturnUrl = "http://localhost:8080/api/users/payments/vnpay-return";
     public static String vnp_TmnCode = "D7MD0WVM";
     public static String secretKey = "TBST6P21OVODJBHITTRXVWGK4B8BPXWD";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
@@ -76,7 +76,7 @@ public static String vnp_ReturnUrl  = "http://localhost:8080/api/users/payments/
                 sb.append("&");
             }
         }
-        return hmacSHA512(secretKey,sb.toString());
+        return hmacSHA512(secretKey, sb.toString());
     }
 
     public static String hmacSHA512(final String key, final String data) {
