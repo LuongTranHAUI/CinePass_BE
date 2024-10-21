@@ -30,7 +30,6 @@ public class PaymentService {
     public JsonObject processPayment(PaymentRequest paymentRequest) throws UnsupportedEncodingException {
         String orderType = "other";
         long amount = paymentRequest.getAmount().multiply(new BigDecimal(100)).longValue();
-//        long amount = 10000*100;
         String bankCode = paymentRequest.getBankCode();
 
         String vnp_TxnRef = VnPayConfig.getRandomNumber(8);
@@ -130,38 +129,62 @@ public class PaymentService {
         String signValue = VnPayConfig.hashAllFields(fields);
 
         JsonObject response = new JsonObject();
-//        if (signValue.equals(vnp_SecureHash)) {
-            if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
-                response.addProperty("message", "GD Thanh cong");
-
-                // Update payment status to successful
-                String transactionId = request.getParameter("vnp_TxnRef");
-                Payment payment = paymentRepository.findByTransactionId(transactionId)
-                        .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+        String responseCode = request.getParameter("vnp_ResponseCode");
+        String transactionId = request.getParameter("vnp_TxnRef");
+        Payment payment = paymentRepository.findByTransactionId(transactionId)
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+        switch (responseCode) {
+            case "00":
+                response.addProperty("message", "GD thanh cong");
                 payment.setStatus(PaymentStatus.COMPLETED);
-                paymentRepository.save(payment);
-            } else {
-                response.addProperty("message", "GD Khong thanh cong");
-                if ("24".equals(request.getParameter("vnp_ResponseCode"))) {
-                    // Update payment status to canceled
-                    String transactionId = request.getParameter("vnp_TxnRef");
-                    Payment payment = paymentRepository.findByTransactionId(transactionId)
-                            .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
-                    payment.setStatus(PaymentStatus.CANCELED);
-                    paymentRepository.save(payment);
-                }
-                else {
-                    // Update payment status to failed
-                    String transactionId = request.getParameter("vnp_TxnRef");
-                    Payment payment = paymentRepository.findByTransactionId(transactionId)
-                            .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
-                    payment.setStatus(PaymentStatus.FAILED);
-                    paymentRepository.save(payment);
-            }
+                break;
+            case "24":
+            case "15":
+                response.addProperty("message", "GD bi huy");
+                payment.setStatus(PaymentStatus.CANCELED);
+                break;
+            default:
+                response.addProperty("message", "GD khong thanh cong");
+                payment.setStatus(PaymentStatus.FAILED);
+                break;
         }
-//            else {
-//            response.addProperty("message", "Chu ky khong hop le");
-//        }
+        paymentRepository.save(payment);
         return response;
+    }
+
+    public Payment add(PaymentRequest request) {
+        var payment = Payment.builder()
+                .transactionId(request.getTransactionId())
+                .amount(request.getAmount())
+                .currency(request.getCurrency())
+                .status(PaymentStatus.valueOf("COMPLETED"))
+                .paymentMethod(paymentMethodRepository.findById(request.getPaymentMethodId())
+                        .orElseThrow(() -> new IllegalArgumentException("Payment Method not found")))
+                .user(userService.getCurrentUser())
+                .createdBy(userService.getCurrentUserId())
+                .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
+                .build();
+        paymentRepository.save(payment);
+        return payment;
+    }
+
+    public Payment update(PaymentRequest request) {
+        var payment = paymentRepository.findByTransactionId(request.getTransactionId())
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+        payment.setAmount(request.getAmount());
+        payment.setCurrency(request.getCurrency());
+        payment.setPaymentMethod(paymentMethodRepository.findById(request.getPaymentMethodId())
+                .orElseThrow(() -> new IllegalArgumentException("Payment Method not found")));
+        payment.setUpdatedBy(userService.getCurrentUserId());
+        payment.setUpdatedAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+        paymentRepository.save(payment);
+        return payment;
+    }
+
+    public Payment delete(Long id) {
+        var payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+        paymentRepository.deleteById(payment.getId());
+        return payment;
     }
 }
