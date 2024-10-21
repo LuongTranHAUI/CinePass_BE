@@ -47,4 +47,9 @@ public class PaymentMethodService {
     public List<PaymentMethod> findAll() {
         return repository.findAll();
     }
+
+    public PaymentMethod getPaymentMethod(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Payment Method not found"));
+    }
 }
