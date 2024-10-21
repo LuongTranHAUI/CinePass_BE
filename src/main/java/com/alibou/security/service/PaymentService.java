@@ -10,9 +10,10 @@ import com.alibou.security.repository.PaymentRepository;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -23,11 +24,12 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
+    private static final Logger logger = LoggerFactory.getLogger(PaymentService.class);
     private final PaymentRepository paymentRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final UserService userService;
 
-    public JsonObject processPayment(PaymentRequest paymentRequest) throws UnsupportedEncodingException {
+    public JsonObject processPayment(PaymentRequest paymentRequest) {
         String orderType = "other";
         long amount = paymentRequest.getAmount().multiply(new BigDecimal(100)).longValue();
         String bankCode = paymentRequest.getBankCode();
@@ -75,7 +77,7 @@ public class PaymentService {
         StringBuilder query = new StringBuilder();
         for (String fieldName : fieldNames) {
             String fieldValue = vnp_Params.get(fieldName);
-            if (fieldValue != null && fieldValue.length() > 0) {
+            if (fieldValue != null && !fieldValue.isEmpty()) {
                 hashData.append(fieldName).append('=').append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
                 query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII)).append('=').append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
                 if (!fieldName.equals(fieldNames.get(fieldNames.size() - 1))) {
@@ -114,19 +116,13 @@ public class PaymentService {
         for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
             String fieldName = params.nextElement();
             String fieldValue = request.getParameter(fieldName);
-            if (fieldValue != null && fieldValue.length() > 0) {
+            if (fieldValue != null && !fieldValue.isEmpty()) {
                 fields.put(fieldName, fieldValue);
             }
         }
-
-        String vnp_SecureHash = request.getParameter("vnp_SecureHash");
-        if (fields.containsKey("vnp_SecureHashType")) {
-            fields.remove("vnp_SecureHashType");
-        }
-        if (fields.containsKey("vnp_SecureHash")) {
-            fields.remove("vnp_SecureHash");
-        }
-        String signValue = VnPayConfig.hashAllFields(fields);
+        fields.forEach((key, value) -> logger.debug("Field: {} = {}", key, value));
+        fields.remove("vnp_SecureHashType");
+        fields.remove("vnp_SecureHash");
 
         JsonObject response = new JsonObject();
         String responseCode = request.getParameter("vnp_ResponseCode");
