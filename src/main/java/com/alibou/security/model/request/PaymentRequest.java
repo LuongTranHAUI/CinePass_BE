@@ -21,5 +21,4 @@ public class PaymentRequest {
     private Long paymentMethodId;
     private String bankCode;
     private String language;
-    private String ipAddress;
 }

@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +29,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final UserService userService;
+    private final HttpServletRequest httpServletRequest;
 
     public JsonObject processPayment(PaymentRequest paymentRequest) {
         String orderType = "other";
@@ -35,7 +37,7 @@ public class PaymentService {
         String bankCode = paymentRequest.getBankCode();
 
         String vnp_TxnRef = VnPayConfig.getRandomNumber(8);
-        String vnp_IpAddr = paymentRequest.getIpAddress();
+        String vnp_IpAddr = VnPayConfig.getIpAddress(httpServletRequest);
 
         String vnp_TmnCode = VnPayConfig.vnp_TmnCode;
 
@@ -98,7 +100,7 @@ public class PaymentService {
                 .transactionId(vnp_TxnRef)
                 .amount(paymentRequest.getAmount())
                 .currency(paymentRequest.getCurrency())
-                .status(PaymentStatus.valueOf("PROCESSING"))
+                .status(PaymentStatus.PROCESSING)
                 .user(userService.getCurrentUser())
                 .paymentMethod(paymentMethod)
                 .createdBy(userService.getCurrentUserId())
@@ -114,36 +116,74 @@ public class PaymentService {
     public JsonObject handleVnPayReturn(HttpServletRequest request) {
         Map<String, String> fields = new HashMap<>();
         for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
-            String fieldName = params.nextElement();
-            String fieldValue = request.getParameter(fieldName);
+            String fieldName = null;
+            try {
+                fieldName = URLEncoder.encode(params.nextElement(), StandardCharsets.US_ASCII.toString());
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            String fieldValue = null;
+            try {
+                fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.US_ASCII.toString());
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
             if (fieldValue != null && !fieldValue.isEmpty()) {
                 fields.put(fieldName, fieldValue);
             }
         }
-        fields.forEach((key, value) -> logger.debug("Field: {} = {}", key, value));
-        fields.remove("vnp_SecureHashType");
-        fields.remove("vnp_SecureHash");
 
-        JsonObject response = new JsonObject();
-        String responseCode = request.getParameter("vnp_ResponseCode");
-        String transactionId = request.getParameter("vnp_TxnRef");
-        Payment payment = paymentRepository.findByTransactionId(transactionId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
-        switch (responseCode) {
-            case "00":
-                response.addProperty("message", "GD thanh cong");
-                payment.setStatus(PaymentStatus.COMPLETED);
-                break;
-            case "24":
-            case "15":
-                response.addProperty("message", "GD bi huy");
-                payment.setStatus(PaymentStatus.CANCELED);
-                break;
-            default:
-                response.addProperty("message", "GD khong thanh cong");
-                payment.setStatus(PaymentStatus.FAILED);
-                break;
+        String vnp_SecureHash = request.getParameter("vnp_SecureHash");
+        if (fields.containsKey("vnp_SecureHashType")) {
+            fields.remove("vnp_SecureHashType");
         }
+        if (fields.containsKey("vnp_SecureHash")) {
+            fields.remove("vnp_SecureHash");
+        }
+
+        String signValue = VnPayConfig.hashAllFields(fields);
+        JsonObject response = new JsonObject();
+
+        if (signValue.equals(vnp_SecureHash)) {
+            String transactionId = request.getParameter("vnp_TxnRef");
+            Payment payment = paymentRepository.findByTransactionId(transactionId)
+                    .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+
+            boolean checkOrderId = true; // Assume transaction ID exists in the database
+            boolean checkAmount = true; // Assume the amount is correct
+            boolean checkOrderStatus = payment.getStatus() == PaymentStatus.PROCESSING; // Check if the payment status is pending
+
+            if (checkOrderId) {
+                if (checkAmount) {
+                    if (checkOrderStatus) {
+                        if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
+                            payment.setStatus(PaymentStatus.COMPLETED);
+                            response.addProperty("message", "GD thanh cong");
+                        } else {
+                            payment.setStatus(PaymentStatus.FAILED);
+                            response.addProperty("message", "GD khong thanh cong");
+                        }
+                        response.addProperty("RspCode", "00");
+                        response.addProperty("Message", "Confirm Success");
+                    } else {
+                        response.addProperty("RspCode", "02");
+                        response.addProperty("Message", "Order already confirmed");
+                    }
+                } else {
+                    response.addProperty("RspCode", "04");
+                    response.addProperty("Message", "Invalid Amount");
+                }
+            } else {
+                response.addProperty("RspCode", "01");
+                response.addProperty("Message", "Order not Found");
+            }
+        } else {
+            response.addProperty("RspCode", "97");
+            response.addProperty("Message", "Invalid Checksum");
+        }
+
+        Payment payment = paymentRepository.findByTransactionId(request.getParameter("vnp_TxnRef"))
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
         paymentRepository.save(payment);
         return response;
     }
@@ -153,7 +193,7 @@ public class PaymentService {
                 .transactionId(request.getTransactionId())
                 .amount(request.getAmount())
                 .currency(request.getCurrency())
-                .status(PaymentStatus.valueOf("COMPLETED"))
+                .status(PaymentStatus.COMPLETED)
                 .paymentMethod(paymentMethodRepository.findById(request.getPaymentMethodId())
                         .orElseThrow(() -> new IllegalArgumentException("Payment Method not found")))
                 .user(userService.getCurrentUser())
