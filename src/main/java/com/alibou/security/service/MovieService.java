@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -43,6 +44,16 @@ public class MovieService {
 
     public MovieResponse getMovieById(long id) {
         Movie movie = movieRepository.findById(id).orElseThrow(() -> new ApplicationContextException("Movies not found"));
+
+        double totalRating = movieReviewRepository.sumRatingByMovieId(id);
+        int numberOfReviews = movieReviewRepository.countReviewsByMovieId(id);
+
+        double averageRating = numberOfReviews > 0 ? totalRating / numberOfReviews : 0.0;
+
+        movie.setRating(averageRating);
+        Movie savedMovie = movieRepository.save(movie);
+
+        movieMapper.toMovieResponse(savedMovie);
         return movieMapper.toMovieResponse(movie);
     }
 
@@ -63,7 +74,7 @@ public class MovieService {
     }
 
     public void deleteMovieById(long id) {
-        // Tìm movie cần xóa
+
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new ApplicationContextException("Movie not found"));
         movieRepository.deleteById(id);
@@ -71,51 +82,20 @@ public class MovieService {
     }
 
     public MovieResponse addMovie(MovieRequest request) {
-        // Kiểm tra xem phim đã tồn tại hay chưa
+
         if (movieRepository.existsByTitle(request.getTitle())) {
             throw new ApplicationContextException("Movie already exists");
         }
 
-        // Chuyển đổi yêu cầu thành đối tượng Movie
         Movie movie = movieMapper.toMovie(request);
-        movie.setId(null); // Đảm bảo tạo mới, không ghi đè lên ID hiện có
-
-        // Thiết lập thời gian tạo và cập nhật
+//        movie.setId(null);
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         movie.setCreatedAt(currentTime.toLocalDateTime());
         movie.setUpdatedAt(currentTime.toLocalDateTime());
 
         try {
-            // Lưu Movie đầu tiên để có ID cho việc liên kết
             Movie savedMovie = movieRepository.save(movie);
 
-            // Tạo các đối tượng MovieReview từ yêu cầu và liên kết với Movie đã lưu
-            HashSet<MovieReview> movieReviews = new HashSet<>();
-            if (request.getReviews() != null) {
-                request.getReviews().forEach(reviewRequest -> {
-                    MovieReview movieReview = movieReviewMapper.toEntity(reviewRequest);
-                    movieReview.setMovie(savedMovie); // Thiết lập liên kết với movie đã lưu
-                    movieReview.setCreatedAt(currentTime.toLocalDateTime());
-                    movieReview.setUpdatedAt(currentTime.toLocalDateTime());
-                    movieReviews.add(movieReview);
-                });
-            }
-
-            // Lưu tất cả các review đã liên kết
-            movieReviewRepository.saveAll(movieReviews);
-
-            // Cập nhật danh sách review vào Movie đã lưu
-            savedMovie.setReviews(movieReviews);
-
-            // Cập nhật danh sách showtimes
-            HashSet<Showtime> showtimes = new HashSet<>();
-            showTimeRepository.findById(savedMovie.getId()).ifPresent(showtimes::add);
-            savedMovie.setShowtimes(showtimes);
-
-            // Lưu lại Movie sau khi đã liên kết các review (nếu có thay đổi)
-            movieRepository.save(savedMovie);
-
-            // Trả về MovieResponse
             return movieMapper.toMovieResponse(savedMovie);
 
         } catch (Exception e) {

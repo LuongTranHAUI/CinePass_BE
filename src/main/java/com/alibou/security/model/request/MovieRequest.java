@@ -31,6 +31,8 @@ public class MovieRequest {
     Long createdBy;
     Long updatedBy;
     Double rating;
+//    Long showtimeId;
+//    Long movieReviewId;
     Set<MovieReview> reviews;
     Set<Showtime> showtimes;
 }

@@ -63,6 +63,10 @@ public class MovieMapperImpl implements MovieMapper {
 
         MovieResponse.MovieResponseBuilder movieResponse = MovieResponse.builder();
 
+        Set<Showtime> set = movie.getShowtimes();
+        if ( set != null ) {
+            movieResponse.showtimes( new LinkedHashSet<Showtime>( set ) );
+        }
         movieResponse.title( movie.getTitle() );
         if ( movie.getDuration() != null ) {
             movieResponse.duration( movie.getDuration() );
@@ -79,13 +83,9 @@ public class MovieMapperImpl implements MovieMapper {
         movieResponse.createdBy( movie.getCreatedBy() );
         movieResponse.updatedBy( movie.getUpdatedBy() );
         movieResponse.rating( movie.getRating() );
-        Set<MovieReview> set = movie.getReviews();
-        if ( set != null ) {
-            movieResponse.reviews( new LinkedHashSet<MovieReview>( set ) );
-        }
-        Set<Showtime> set1 = movie.getShowtimes();
+        Set<MovieReview> set1 = movie.getReviews();
         if ( set1 != null ) {
-            movieResponse.showtimes( new LinkedHashSet<Showtime>( set1 ) );
+            movieResponse.reviews( new LinkedHashSet<MovieReview>( set1 ) );
         }
 
         return movieResponse.build();

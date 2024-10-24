@@ -5,6 +5,7 @@ import com.alibou.security.entity.Showtime;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
@@ -30,7 +31,8 @@ public class MovieResponse {
     Long createdBy;
     Long updatedBy;
     Double rating;
+//    MovieReview review;
+//    Showtime showtimes;
     Set<MovieReview> reviews;
     Set<Showtime> showtimes;
-
 }

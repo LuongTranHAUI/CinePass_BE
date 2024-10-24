@@ -46,5 +46,5 @@ public class Discount {
     private Long updatedBy;
 
     @OneToMany(mappedBy = "discount")
-    private Set<Ticket> tickets;
+    private Set<DiscountApplication> discountApplications;
 }

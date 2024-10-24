@@ -4,6 +4,7 @@ import com.alibou.security.entity.Hall;
 import com.alibou.security.entity.Movie;
 import com.alibou.security.entity.Theater;
 import com.alibou.security.entity.Ticket;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
