@@ -78,6 +78,7 @@ public class TicketService {
     }
 
     public TicketResponse getTicket(long id) {
+        int n = 0;
         Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ApplicationContextException("Ticket does not exist"));
 
         return ticketMapper.toTicketResponse(ticket);
