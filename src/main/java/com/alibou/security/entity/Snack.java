@@ -31,9 +31,6 @@ public class Snack {
     @Column(name = "type")
     private String type;
 
-    @Column(name = "drink_id")
-    private Long drinkId;
-
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -45,7 +42,4 @@ public class Snack {
 
     @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
-
-    @Column(name = "combo_price")
-    private BigDecimal comboPrice;
 }
