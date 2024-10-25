@@ -31,7 +31,7 @@ public class PaymentService {
     private final UserService userService;
     private final HttpServletRequest httpServletRequest;
 
-    public JsonObject processPayment(PaymentRequest paymentRequest) {
+    public JsonObject processVNPayment(PaymentRequest paymentRequest) {
         String orderType = "other";
         long amount = paymentRequest.getAmount().multiply(new BigDecimal(100)).longValue();
         String bankCode = paymentRequest.getBankCode();
@@ -222,5 +222,9 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
         paymentRepository.deleteById(payment.getId());
         return payment;
+    }
+
+    public List<Payment> findByUserId(Long userId) {
+        return paymentRepository.findByUserId(userId);
     }
 }

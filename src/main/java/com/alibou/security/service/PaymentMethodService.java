@@ -27,11 +27,10 @@ public class PaymentMethodService {
         repository.save(paymentMethod);
     }
 
-    public void change(PaymentMethodRequest request) {
-        var existingPaymentMethod = repository.findById(request.getId())
+    public void change(PaymentMethodRequest request, Long id) {
+        var existingPaymentMethod = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Payment Method not found"));
         var paymentMethod = PaymentMethod.builder()
-                .id(existingPaymentMethod.getId())
                 .name(request.getName())
                 .description(request.getDescription())
                 .updatedAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
@@ -46,10 +45,5 @@ public class PaymentMethodService {
 
     public List<PaymentMethod> findAll() {
         return repository.findAll();
-    }
-
-    public PaymentMethod getPaymentMethod(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Payment Method not found"));
     }
 }

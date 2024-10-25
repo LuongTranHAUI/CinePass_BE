@@ -20,8 +20,8 @@ public class TheaterService {
     private final TheaterRepository repository;
     private final UserService userService;
 
-    public TheaterResponse add(TheaterRequest request) {
-        var existingTheater = repository.findByName(request.getName());
+    public TheaterResponse add(TheaterRequest request, Long id) {
+        var existingTheater = repository.findById(id);
         if (existingTheater.isPresent()) {
             throw new IllegalArgumentException("Theater available");
         }
@@ -37,11 +37,10 @@ public class TheaterService {
         return null;
     }
 
-    public TheaterResponse change(TheaterRequest request) {
-        var existingTheater = repository.findById(request.getId())
+    public TheaterResponse change(TheaterRequest request, Long id) {
+        var existingTheater = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Theater not found"));
         var theater = Theater.builder()
-                .id(existingTheater.getId())
                 .name(request.getName())
                 .location(request.getLocation())
                 .phone(request.getPhone())
@@ -69,12 +68,5 @@ public class TheaterService {
     public Theater findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Theater not found"));
-    }
-
-    public TheaterResponse findByName(String name) {
-        var theater = repository.findByName(name)
-                .orElseThrow(() -> new IllegalArgumentException("Theater not found"));
-        logger.info("Theater retrieved successfully: {}", name);
-        return null;
     }
 }

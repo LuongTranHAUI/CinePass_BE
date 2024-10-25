@@ -9,8 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TheaterRequest {
-
-    private Long id;
     @NotNull
     private String name;
     @NotNull

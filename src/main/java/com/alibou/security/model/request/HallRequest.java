@@ -11,7 +11,6 @@ import lombok.*;
 @AllArgsConstructor
 public class HallRequest {
 
-    private Long id;
     @NotNull
     private String name;
     @NotNull

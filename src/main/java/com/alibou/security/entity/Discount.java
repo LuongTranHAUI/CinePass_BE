@@ -1,5 +1,6 @@
 package com.alibou.security.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,5 +48,6 @@ public class Discount {
     private Long updatedBy;
 
     @OneToMany(mappedBy = "discount")
+    @JsonManagedReference
     private Set<DiscountApplication> discountApplications;
 }

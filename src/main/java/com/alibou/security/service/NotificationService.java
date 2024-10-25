@@ -18,6 +18,11 @@ public class NotificationService {
     private final NotificationRepository repository;
     private final UserService userService;
 
+    public void findAll() {
+        var notifications = repository.findAll();
+        logger.info("Notifications retrieved successfully: {}", notifications);
+    }
+
     public void add(NotificationRequest request) {
         var notification = Notification.builder()
                 .type(request.getType())
@@ -30,11 +35,10 @@ public class NotificationService {
         logger.info("Notification added successfully: {}", notification);
     }
 
-    public void change(NotificationRequest request) {
-        var existingNotification = repository.findById(request.getId())
+    public void change(NotificationRequest request, Long id) {
+        var existingNotification = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
         var notification = Notification.builder()
-                .id(existingNotification.getId())
                 .type(request.getType())
                 .status(request.getStatus())
                 .message(request.getMessage())
@@ -50,11 +54,5 @@ public class NotificationService {
                 .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
         repository.deleteById(existingNotification.getId());
         logger.info("Notification deleted successfully: {}", id);
-    }
-
-    public void getNotificationById(Long id) {
-        var notification = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
-        logger.info("Retrieved notification successfully with ID: {}", id);
     }
 }

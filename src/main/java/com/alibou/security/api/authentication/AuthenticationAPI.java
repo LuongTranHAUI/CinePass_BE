@@ -1,4 +1,4 @@
-package com.alibou.security.api.user;
+package com.alibou.security.api.authentication;
 
 import com.alibou.security.exception.EmailAlreadyInUseException;
 import com.alibou.security.exception.MissingRequiredFieldsException;

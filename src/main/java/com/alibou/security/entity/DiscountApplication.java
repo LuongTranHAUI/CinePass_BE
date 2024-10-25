@@ -1,5 +1,6 @@
 package com.alibou.security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,10 +22,12 @@ public class DiscountApplication {
 
     @ManyToOne
     @JoinColumn(name = "discount_id")
+    @JsonBackReference
     private Discount discount;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @Column(name = "created_at", updatable = false)

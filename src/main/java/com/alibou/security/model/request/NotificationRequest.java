@@ -10,7 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationRequest {
-    private Long id;
 
     @NotNull
     private String type;

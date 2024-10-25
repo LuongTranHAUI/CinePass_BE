@@ -1,4 +1,4 @@
-package com.alibou.security.api.manager;
+package com.alibou.security.api.admin;
 
 import com.alibou.security.entity.Discount;
 import com.alibou.security.model.request.DiscountRequest;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/management/discounts")
+@RequestMapping("/api/admin/discounts")
 @RequiredArgsConstructor
 public class DiscountAPI {
     private static final Logger logger = LoggerFactory.getLogger(DiscountAPI.class);
@@ -30,18 +30,6 @@ public class DiscountAPI {
         }
     }
 
-    @GetMapping("/{code}")
-    public ResponseEntity<?> findDiscountByCode(@PathVariable String code) {
-        try {
-            Discount discount = service.findByCode(code);
-            logger.info("Retrieved discount successfully with code: {}", code);
-            return ResponseEntity.ok(discount); // 200 OK
-        } catch (Exception e) {
-            logger.error("Failed to retrieve discount with code: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
-        }
-    }
-
     @PostMapping
     public ResponseEntity<?> addDiscount(@RequestBody DiscountRequest request) {
         try {
@@ -54,7 +42,19 @@ public class DiscountAPI {
         }
     }
 
-    @DeleteMapping
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateDiscount(@RequestBody DiscountRequest request, @PathVariable Long id) {
+        try {
+            service.update(request,id);
+            logger.info("Discount updated successfully: {}", request);
+            return ResponseEntity.ok(null); // 200 OK
+        } catch (Exception e) {
+            logger.error("Failed to update discount: {}", e.getMessage());
+            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+        }
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteDiscount(@PathVariable Long id) {
         try {
             service.delete(id);

@@ -21,10 +21,6 @@ public class HallService {
     private final TheaterRepository theaterRepository;
 
     public void add(HallRequest request) {
-        var existingHall = repository.findByName(request.getName());
-        if (existingHall.isPresent()) {
-            throw new IllegalArgumentException("Hall available");
-        }
         var hall = Hall.builder()
                 .name(request.getName())
                 .seatCapacity(request.getSeatCapacity())
@@ -37,8 +33,8 @@ public class HallService {
         logger.info("Hall added successfully: {}", hall);
     }
 
-    public void change(HallRequest request) {
-        var existingHall = repository.findById(request.getId())
+    public void change(HallRequest request, Long id) {
+        var existingHall = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Hall not found"));
         var hall = Hall.builder()
                 .id(existingHall.getId())
@@ -60,19 +56,5 @@ public class HallService {
         List<Hall> halls = repository.findAll();
         logger.info("Halls retrieved successfully");
         return halls;
-    }
-
-    public Hall findById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Hall not found"));
-    }
-
-    public Hall findByName(String name) {
-        return repository.findByName(name)
-                .orElseThrow(() -> new IllegalArgumentException("Hall not found"));
-    }
-
-    public List<Hall> findByTheaterId(Long theaterId) {
-        return repository.findByTheaterId(theaterId);
     }
 }

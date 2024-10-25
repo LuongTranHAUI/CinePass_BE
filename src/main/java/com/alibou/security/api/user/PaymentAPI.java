@@ -1,5 +1,6 @@
 package com.alibou.security.api.user;
 
+import com.alibou.security.entity.Payment;
 import com.alibou.security.model.request.PaymentRequest;
 import com.alibou.security.service.PaymentService;
 import com.google.gson.JsonObject;
@@ -9,11 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/users/payments")
+@RequestMapping("/api/user/payments")
 @RequiredArgsConstructor
 public class PaymentAPI {
     private static final Logger logger = LoggerFactory.getLogger(PaymentAPI.class);
@@ -22,7 +24,7 @@ public class PaymentAPI {
     @PostMapping("/vnpay-process")
     public ResponseEntity<String> processPayment(@RequestBody PaymentRequest paymentRequest) {
         try {
-            JsonObject response = paymentService.processPayment(paymentRequest);
+            JsonObject response = paymentService.processVNPayment(paymentRequest);
             return ResponseEntity.ok(response.toString());
         } catch (Exception e) {
             logger.error("Payment processing failed", e);
@@ -36,37 +38,16 @@ public class PaymentAPI {
         return ResponseEntity.ok(response.toString());
     }
 
-    @PreAuthorize("hasRole('MANAGER')")
-    @PostMapping("/cash-process")
-    public ResponseEntity<?> addCashPayment(@RequestBody PaymentRequest paymentRequest) {
+    @GetMapping("/{user_id}")
+    public ResponseEntity<?> getPayments(@PathVariable("user_id") Long userId) {
         try {
-            paymentService.add(paymentRequest);
-            return ResponseEntity.ok("Payment processed successfully");
+            List<Payment> payments = paymentService.findByUserId(userId);
+            return ResponseEntity.ok(payments);
         } catch (Exception e) {
-            logger.error("Payment processing failed", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Payment processing failed");
+            logger.error("Failed to retrieve payments: {}", e.getMessage());
+            return ResponseEntity.status(500).body(null);
         }
     }
-    @PreAuthorize("hasRole('MANAGER')")
-    @PutMapping("/cash-process")
-    public ResponseEntity<?> updateCashPayment(@RequestBody PaymentRequest paymentRequest) {
-        try {
-            paymentService.update(paymentRequest);
-            return ResponseEntity.ok("Payment updated successfully");
-        } catch (Exception e) {
-            logger.error("Payment update failed", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Payment update failed");
-        }
-    }
-    @PreAuthorize("hasRole('MANAGER')")
-    @DeleteMapping("/cash-process/{id}")
-    public ResponseEntity<?> deleteCashPayment(@PathVariable Long id) {
-        try {
-            paymentService.delete(id);
-            return ResponseEntity.ok("Payment deleted successfully");
-        } catch (Exception e) {
-            logger.error("Payment delete failed", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Payment delete failed");
-        }
-    }
+
+
 }

@@ -30,31 +30,8 @@ public class HallAPI {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findHallById(@PathVariable Long id) {
-        try {
-            Hall hall = service.findById(id);
-            logger.info("Retrieved hall successfully with ID: {}", id);
-            return ResponseEntity.ok(hall); // 200 OK
-        } catch (Exception e) {
-            logger.error("Failed to retrieve hall with ID: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
-        }
-    }
-
-    @GetMapping("/theater/{theaterId}")
-    public ResponseEntity<?> findHallsByTheaterId(@PathVariable Long theaterId) {
-        try {
-            List<Hall> halls = service.findByTheaterId(theaterId);
-            logger.info("Retrieved halls successfully with theater ID: {}", theaterId);
-            return ResponseEntity.ok(halls); // 200 OK
-        } catch (Exception e) {
-            logger.error("Failed to retrieve halls with theater ID: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
-        }
-    }
-
-    @PostMapping public ResponseEntity<?> addHall(@RequestBody HallRequest request) {
+    @PostMapping
+    public ResponseEntity<?> addHall(@RequestBody HallRequest request) {
         try {
             service.add(request);
             logger.info("Hall added successfully: {}", request);
@@ -65,9 +42,10 @@ public class HallAPI {
         }
     }
 
-    @PutMapping public ResponseEntity<?> changeHall(@RequestBody HallRequest request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> changeHall(@RequestBody HallRequest request, @PathVariable Long id) {
         try {
-            service.change(request);
+            service.change(request, id);
             logger.info("Hall updated successfully: {}", request);
             return ResponseEntity.ok(request); // 200 OK
         } catch (Exception e) {

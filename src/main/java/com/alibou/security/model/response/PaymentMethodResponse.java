@@ -8,8 +8,4 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class PaymentMethodResponse {
-    private Long id;
-    private String name;
-    private String description;
-    private Long paymentMethodId;
 }

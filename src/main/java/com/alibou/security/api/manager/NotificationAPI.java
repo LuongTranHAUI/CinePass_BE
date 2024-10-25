@@ -15,14 +15,13 @@ public class NotificationAPI {
     private static final Logger logger = LoggerFactory.getLogger(TheaterAPI.class);
     private final NotificationService service;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findNotificationById(Long id) {
+    @GetMapping
+    public ResponseEntity<?> getNotifications() {
         try {
-            service.getNotificationById(id);
-            logger.info("Retrieved notification successfully with ID: {}", id);
+            service.findAll();
             return ResponseEntity.ok().build(); // 200 OK
         } catch (Exception e) {
-            logger.error("Failed to retrieve notification with ID: {}", e.getMessage());
+            logger.error("Failed to retrieve notifications: {}", e.getMessage());
             return ResponseEntity.status(500).body(null); // 500 Internal Server Error
         }
     }
@@ -39,10 +38,10 @@ public class NotificationAPI {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> changeNotification(@RequestBody NotificationRequest request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> changeNotification(@RequestBody NotificationRequest request, @PathVariable Long id) {
         try {
-            service.change(request);
+            service.change(request, id);
             logger.info("Notification updated successfully: {}", request);
             return ResponseEntity.ok().build(); // 200 OK
         } catch (Exception e) {
@@ -51,7 +50,7 @@ public class NotificationAPI {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteNotification(@PathVariable Long id) {
         try {
             service.delete(id);

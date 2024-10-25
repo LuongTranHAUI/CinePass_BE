@@ -10,8 +10,4 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 public class PaymentResponse {
-    private Long id;
-    private String transactionId;
-    private BigDecimal amount;
-    private String currency;
 }

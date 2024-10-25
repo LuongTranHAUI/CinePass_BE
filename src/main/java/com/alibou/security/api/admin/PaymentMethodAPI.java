@@ -1,4 +1,4 @@
-package com.alibou.security.api.manager;
+package com.alibou.security.api.admin;
 
 import com.alibou.security.entity.PaymentMethod;
 import com.alibou.security.model.request.PaymentMethodRequest;
@@ -42,10 +42,10 @@ public class PaymentMethodAPI {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> changePaymentMethod(@RequestBody PaymentMethodRequest request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> changePaymentMethod(@RequestBody PaymentMethodRequest request, @PathVariable Long id) {
         try {
-            service.change(request);
+            service.change(request, id);
             logger.info("Payment method changed successfully: {}", request);
             return ResponseEntity.ok(null); // 200 OK
         } catch (Exception e) {
@@ -54,7 +54,7 @@ public class PaymentMethodAPI {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePaymentMethod(@PathVariable Long id) {
         try {
             service.delete(id);

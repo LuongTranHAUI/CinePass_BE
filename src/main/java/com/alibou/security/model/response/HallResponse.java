@@ -9,10 +9,4 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class HallResponse {
-
-    private Long id;
-    private String name;
-    private Integer seatCapacity;
-    private Long theaterId;
-    private HallStatus status;
 }

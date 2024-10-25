@@ -1,6 +1,7 @@
 package com.alibou.security.entity;
 
 import com.alibou.security.enums.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,9 +48,11 @@ public class Payment {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "payment_method_id", nullable = false)
+    @JsonBackReference
     private PaymentMethod paymentMethod;
 }

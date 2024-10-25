@@ -1,5 +1,7 @@
 package com.alibou.security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,20 +23,24 @@ public class Showtime {
     private Long id;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
     @ManyToOne
     @JoinColumn(name = "theater_id")
+    @JsonBackReference
     private Theater theater;
 
     @ManyToOne
     @JoinColumn(name = "hall_id")
+    @JsonBackReference
     private Hall hall;
 
     @Column(name = "show_time", nullable = false)
     private LocalDateTime showTime;
 
     @OneToMany(mappedBy = "showtime")
+    @JsonManagedReference
     private Set<Ticket> tickets;
 }

@@ -1,5 +1,7 @@
 package com.alibou.security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,8 +59,10 @@ public class Movie {
     private Double rating;
 
     @OneToMany(mappedBy = "movie")
+    @JsonManagedReference
     private Set<MovieReview> reviews;
 
     @OneToMany(mappedBy = "movie")
+    @JsonManagedReference
     private Set<Showtime> showtimes;
 }

@@ -1,6 +1,8 @@
 package com.alibou.security.entity;
 
 import com.alibou.security.enums.HallStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,8 +45,10 @@ public class Hall {
 
     @ManyToOne
     @JoinColumn(name = "theater_id")
+    @JsonBackReference
     private Theater theater;
 
     @OneToMany(mappedBy = "hall")
+    @JsonManagedReference
     private Set<Showtime> showtimes;
 }

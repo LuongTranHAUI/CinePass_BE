@@ -1,5 +1,6 @@
 package com.alibou.security.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,5 +40,6 @@ public class PaymentMethod {
     private Long updatedBy;
 
     @OneToMany(mappedBy = "paymentMethod")
+    @JsonManagedReference
     private Set<Payment> payments;
 }

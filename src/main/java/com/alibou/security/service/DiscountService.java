@@ -19,6 +19,9 @@ public class DiscountService {
     private final UserService userService;
     private final DiscountApplicationService discountApplicationService;
 
+    public List<Discount> findAll() {
+        return repository.findAll();
+    }
 
     public void add(DiscountRequest request) {
         var discount = Discount.builder()
@@ -41,11 +44,10 @@ public class DiscountService {
         discountApplicationService.createDiscountApplication(discountApplication);
     }
 
-    public void change(DiscountRequest request) {
-        var existingDiscount = repository.findById(request.getId())
+    public void update(DiscountRequest request, Long id) {
+        var existingDiscount = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Discount not found"));
         var discount = Discount.builder()
-                .id(existingDiscount.getId())
                 .code(request.getCode())
                 .discountPercent(request.getDiscountPercent())
                 .description(request.getDescription())
@@ -61,14 +63,5 @@ public class DiscountService {
         var existingDiscount = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Discount not found"));
         repository.deleteById(existingDiscount.getId());
-    }
-
-    public List<Discount> findAll() {
-        return repository.findAll();
-    }
-
-    public Discount findByCode(String code) {
-        return repository.findByCode(code)
-                .orElseThrow(() -> new IllegalArgumentException("Discount not found"));
     }
 }

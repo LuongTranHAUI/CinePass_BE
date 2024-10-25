@@ -33,37 +33,13 @@ public class TheaterAPI {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findTheaterById(@PathVariable Long id) {
-        try {
-            Theater theater = service.findById(id);
-            logger.info("Retrieved theater successfully with ID: {}", id);
-            return ResponseEntity.ok(theater); // 200 OK
-        } catch (Exception e) {
-            logger.error("Failed to retrieve theater with ID: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
-        }
-    }
-
-    @GetMapping("/name/{name}")
-    public ResponseEntity<?> findTheaterByName(@PathVariable String name) {
-        try {
-            TheaterResponse theater = service.findByName(name);
-            logger.info("Retrieved theater successfully with name: {}", name);
-            return ResponseEntity.ok(theater); // 200 OK
-        } catch (Exception e) {
-            logger.error("Failed to retrieve theater with name {}: {}", name, e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
-        }
-    }
-
     @PostMapping
-    public ResponseEntity<?> addTheater(@RequestBody TheaterRequest request) {
+    public ResponseEntity<?> addTheater(@RequestBody TheaterRequest request, @PathVariable Long id) {
         try {
             if (request == null) {
                 throw new MissingRequiredFieldsException("Request body is missing");
             }
-            TheaterResponse response = service.add(request);
+            TheaterResponse response = service.add(request, id);
             logger.info("Theater saved successfully: {}", request);
             return ResponseEntity.status(201).body(response); // 201 Created
         } catch (MissingRequiredFieldsException e) {
@@ -75,13 +51,13 @@ public class TheaterAPI {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> changeTheater(@RequestBody TheaterRequest request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> changeTheater(@RequestBody TheaterRequest request, @PathVariable Long id) {
         try {
-            if (request == null || request.getId() == null) {
+            if (request == null || id == null) {
                 throw new MissingRequiredFieldsException("Request body or id is missing");
             }
-            TheaterResponse response = service.change(request);
+            TheaterResponse response = service.change(request, id);
             logger.info("Updated theater successfully: {}", request);
             return ResponseEntity.status(200).body(response); // 200 OK
         } catch (MissingRequiredFieldsException e) {

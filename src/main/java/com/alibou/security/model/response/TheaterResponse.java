@@ -8,9 +8,4 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class TheaterResponse {
-
-    private Integer id;
-    private String name;
-    private String location;
-    private String phone;
 }

@@ -11,9 +11,4 @@ import java.sql.Date;
 @Builder
 @AllArgsConstructor
 public class DiscountResponse {
-    private Long id;
-    private String code;
-    private String description;
-    private BigDecimal discountPercent;
-    private Date expirationDate;
 }
