@@ -74,4 +74,13 @@ public class UserService {
         }
         return (User) authentication.getPrincipal();
     }
+
+    public User getUserById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new IllegalStateException("User not found"));
+    }
+
+    public void deleteUserById(Long id) {
+        repository.deactivateUserById(id);
+        logger.info("User with id {} has been deactivated", id);
+    }
 }

@@ -1,5 +1,6 @@
 package com.alibou.security.api.user;
 
+import com.alibou.security.entity.User;
 import com.alibou.security.model.request.ChangePasswordRequest;
 import com.alibou.security.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,13 +13,35 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/user/info")
 @RequiredArgsConstructor
 public class InfoAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(InfoAPI.class);
 
     private final UserService service;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserInfo(@PathVariable Long id) {
+        try {
+            User user = service.getUserById(id);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            logger.error("Failed to retrieve user info", e);
+            return ResponseEntity.status(500).body("Failed to retrieve user info");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        try {
+            service.deleteUserById(id);
+            return ResponseEntity.ok("User deactivated successfully");
+        } catch (Exception e) {
+            logger.error("Failed to deactivate user", e);
+            return ResponseEntity.status(500).body("Failed to deactivate user");
+        }
+    }
 
     @PatchMapping
     public ResponseEntity<?> changePassword(

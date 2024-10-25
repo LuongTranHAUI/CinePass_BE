@@ -75,10 +75,8 @@ public class User implements UserDetails {
     @JsonBackReference
     private Role role;
 
-    @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Token> tokens = List.of(); // Sử dụng ManyToOne nếu cần
+    private List<Token> tokens = List.of();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonManagedReference
@@ -123,4 +121,3 @@ public class User implements UserDetails {
         return true;
     }
 }
-
