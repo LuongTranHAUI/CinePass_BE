@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,11 +24,21 @@ public class NotificationService {
         logger.info("Notifications retrieved successfully: {}", notifications);
     }
 
+    public List<Notification> findByUserId(Long userId) {
+        var notifications = repository.findByUserId(userId);
+        if (notifications.isEmpty()) {
+            throw new IllegalArgumentException("No notifications found for user ID: " + userId);
+        }
+        logger.info("Notifications retrieved successfully for user ID {}: {}", userId, notifications);
+        return notifications;
+    }
+
     public void add(NotificationRequest request) {
         var notification = Notification.builder()
                 .type(request.getType())
                 .message(request.getMessage())
                 .status(NotificationStatus.valueOf("UNREAD"))
+                .user(userService.getUserById(request.getUserId()))
                 .createdBy(userService.getCurrentUserId())
                 .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
                 .build();
@@ -54,5 +65,13 @@ public class NotificationService {
                 .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
         repository.deleteById(existingNotification.getId());
         logger.info("Notification deleted successfully: {}", id);
+    }
+
+    public void markAsRead(Long id) {
+        var existingNotification = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
+        existingNotification.setStatus(NotificationStatus.valueOf("READ"));
+        repository.save(existingNotification);
+        logger.info("Notification marked as read successfully: {}", id);
     }
 }

@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -73,6 +70,7 @@ public class User implements UserDetails {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     @JsonBackReference
+    @ToString.Exclude
     private Role role;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -80,10 +78,12 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonManagedReference
+    @ToString.Exclude
     private Set<Ticket> tickets;
 
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
+    @ToString.Exclude
     private Set<DiscountApplication> discountApplications;
 
     @Override

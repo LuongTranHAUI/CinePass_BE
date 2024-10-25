@@ -3,10 +3,7 @@ package com.alibou.security.entity;
 import com.alibou.security.enums.TokenType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
@@ -32,5 +29,6 @@ public class Token {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   @JsonBackReference
+  @ToString.Exclude
   public User user;
 }

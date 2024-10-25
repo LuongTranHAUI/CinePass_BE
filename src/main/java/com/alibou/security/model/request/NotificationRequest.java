@@ -19,4 +19,7 @@ public class NotificationRequest {
 
     @NotNull
     private NotificationStatus status;
+
+    @NotNull
+    private Long userId;
 }
