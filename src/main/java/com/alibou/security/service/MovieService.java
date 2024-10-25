@@ -37,6 +37,8 @@ public class MovieService {
 
     @Autowired
     MovieReviewMapper movieReviewMapper;
+    @Autowired
+    private UserService userService;
 
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
@@ -63,7 +65,7 @@ public class MovieService {
 
         movie.setCreatedAt(movie.getCreatedAt());
         movie.setUpdatedAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
-
+        movie.setUpdatedBy(userService.getCurrentUserId());
         // Cập nhật các review liên quan nếu cần
         movie.getReviews().forEach(review -> {
             // Thực hiện các thay đổi đối với review dựa trên yêu cầu
@@ -92,6 +94,7 @@ public class MovieService {
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         movie.setCreatedAt(currentTime.toLocalDateTime());
         movie.setUpdatedAt(currentTime.toLocalDateTime());
+        movie.setCreatedBy(userService.getCurrentUserId());
 
         try {
             Movie savedMovie = movieRepository.save(movie);

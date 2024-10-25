@@ -46,7 +46,7 @@ public class Movie {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @Column(name = "created_by",updatable = false,columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_by",updatable = false)
     private Long createdBy;
 
     @Column(name = "updated_by")

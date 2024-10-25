@@ -2,6 +2,8 @@ package com.alibou.security.entity;
 
 import com.alibou.security.enums.SeatStatus;
 import com.alibou.security.enums.TicketStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,14 +26,17 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "showtime_id")
+    @JsonBackReference
     private Showtime showtime;
 
     @ManyToOne
     @JoinColumn(name = "discount_application_id")
+    @JsonBackReference
     private DiscountApplication discountApplication;
 
     @Column(name = "seat_number", nullable = false)

@@ -1,14 +1,19 @@
 package com.alibou.security.api.manager;
 
 import com.alibou.security.entity.Ticket;
+import com.alibou.security.enums.TicketStatus;
 import com.alibou.security.exception.MissingRequiredFieldsException;
+import com.alibou.security.mapper.TicketMapper;
 import com.alibou.security.model.request.TicketRequest;
 import com.alibou.security.model.response.TicketResponse;
+import com.alibou.security.repository.TicketRepository;
 import com.alibou.security.service.TicketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +27,10 @@ public class TicketAPI {
 
     private final TicketService ticketService;
     private final Logger logger = LoggerFactory.getLogger(TicketAPI.class);
+    private final TicketRepository ticketRepository;
+
+    @Autowired
+    TicketMapper ticketMapper;
 
     @PostMapping
     public ResponseEntity<?> createTick(@RequestBody TicketRequest ticketRequest) {
@@ -98,5 +107,34 @@ public class TicketAPI {
             logger.error("Error delete ticket.",e.getMessage());
             return ResponseEntity.status(500).body(null);
         }
+    }
+
+    @GetMapping("/expired/{id}")
+    public ResponseEntity<?> getExpiredTicket(@PathVariable long id) {
+        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ApplicationContextException("Ticket not found"));
+
+        ResponseEntity<?> response = ticketService.CheckExpiredTicket(ticket);
+
+        if (ticket.getStatus() == TicketStatus.EXPIRED) {
+            return ResponseEntity.ok("Ticket expired");
+        }
+
+        else if (ticket.getStatus() == TicketStatus.USED) {
+            return ResponseEntity.ok("Ticket used");
+        }
+
+        else  {
+            return ResponseEntity.ok("Ticket is available");
+        }
+
+//        return ResponseEntity.ok(ticketMapper.toTicketResponse(ticket));
+    }
+
+    @PutMapping("/status/{id}")
+    public ResponseEntity<?> updateTicketStatus(@PathVariable long id, @RequestBody TicketStatus status, @RequestHeader("UserId") Long userId) {
+
+        TicketResponse response = ticketService.CheckAndUpdateTicketStatus(id,status,userId);
+
+        return ResponseEntity.ok("Update ticket status is successful");
     }
 }

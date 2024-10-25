@@ -1,5 +1,7 @@
 package com.alibou.security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -70,13 +72,16 @@ public class User implements UserDetails {
 
   @ManyToOne(fetch = FetchType.EAGER) // Changed to EAGER fetching
   @JoinColumn(name = "role_id")
+  @JsonBackReference
   private Role role;
 
   @Builder.Default
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+  @JsonManagedReference
   private List<Token> tokens = List.of();
 
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+  @JsonManagedReference
   private Set<Ticket> tickets;
 
   @Override

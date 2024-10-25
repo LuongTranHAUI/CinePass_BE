@@ -21,9 +21,12 @@ import java.time.LocalDateTime;
 
 public class TicketRequest {
     Long id;
-    User user;
-    Showtime showtime;
-    DiscountApplication discountApplication;
+    Long showtime_id;
+    Long user_id;
+    Long discount_application_id;
+//    User user;
+//    Showtime showtime;
+//    DiscountApplication discountApplication;
     String seatNumber;
     String ticketType;
     BigDecimal serviceFee = BigDecimal.ZERO;

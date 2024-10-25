@@ -17,8 +17,11 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TicketResponse {
 
+    @ToString.Exclude
     User user;
+    @ToString.Exclude
     Showtime showtime;
+    @ToString.Exclude
     DiscountApplication discountApplication;
     String seatNumber;
     String ticketType;

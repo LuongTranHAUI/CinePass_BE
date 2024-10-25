@@ -1,5 +1,7 @@
 package com.alibou.security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +38,7 @@ public class Showtime {
     private LocalDateTime showTime;
 
     @OneToMany(mappedBy = "showtime")
+    @JsonManagedReference
     private Set<Ticket> tickets;
 
 }
