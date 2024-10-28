@@ -7,6 +7,7 @@ import com.alibou.security.mapper.MovieMapper;
 import com.alibou.security.mapper.MovieReviewMapper;
 import com.alibou.security.model.request.MovieRequest;
 import com.alibou.security.model.response.MovieResponse;
+import com.alibou.security.repository.DiscountApplicationRepository;
 import com.alibou.security.repository.MovieRepository;
 import com.alibou.security.repository.MovieReviewRepository;
 import com.alibou.security.repository.ShowTimeRepository;
@@ -39,6 +40,8 @@ public class MovieService {
     MovieReviewMapper movieReviewMapper;
     @Autowired
     private UserService userService;
+    @Autowired
+    private DiscountApplicationRepository discountApplicationRepository;
 
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
@@ -79,8 +82,11 @@ public class MovieService {
 
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new ApplicationContextException("Movie not found"));
-        movieRepository.deleteById(id);
+
         movieReviewRepository.deleteById(movie.getId());
+        showTimeRepository.deleteById(movie.getId());
+        discountApplicationRepository.deleteById(movie.getId());
+        movieRepository.deleteById(id);
     }
 
     public MovieResponse addMovie(MovieRequest request) {

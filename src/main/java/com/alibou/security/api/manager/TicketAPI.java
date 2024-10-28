@@ -14,13 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/management/ticket")
+@RequestMapping("/api/users/ticket")
 @RequiredArgsConstructor
 @Slf4j
 public class TicketAPI {
@@ -137,4 +138,14 @@ public class TicketAPI {
 
         return ResponseEntity.ok("Update ticket status is successful");
     }
+
+    @GetMapping("/history/{userId}")
+    public ResponseEntity<?> getTicketHistory(@PathVariable long userId) {
+        List<Ticket> tickets = ticketService.getTicketByUserId(userId);
+        if (tickets.isEmpty()) {
+            return ResponseEntity.ok("Ticket not found");
+        }
+        return ResponseEntity.ok(tickets);
+    }
+
 }

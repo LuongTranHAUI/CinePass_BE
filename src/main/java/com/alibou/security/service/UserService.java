@@ -1,11 +1,15 @@
 package com.alibou.security.service;
 
 import com.alibou.security.entity.User;
+import com.alibou.security.mapper.UserMapper;
+import com.alibou.security.model.response.UserResponse;
 import com.alibou.security.repository.UserRepository;
 import com.alibou.security.model.request.ChangePasswordRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContextException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +25,8 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
         if (request == null) {
@@ -54,4 +60,11 @@ public class UserService {
         var user = (User) authentication.getPrincipal();
         return user.getId();
     }
+
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ApplicationContextException("Not found user"));
+
+        return userMapper.toUserResponse(user);
+    }
+
 }

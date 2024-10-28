@@ -1,6 +1,7 @@
 package com.alibou.security.api.user;
 
 import com.alibou.security.model.request.ChangePasswordRequest;
+import com.alibou.security.model.response.UserResponse;
 import com.alibou.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ public class UserAPI {
     private static final Logger logger = LoggerFactory.getLogger(UserAPI.class);
 
     private final UserService service;
+    private final UserService userService;
 
     @PatchMapping
     public ResponseEntity<?> changePassword(
@@ -36,6 +38,18 @@ public class UserAPI {
         } catch (Exception e) {
             logger.error("Error changing password for user: {}", connectedUser.getName(), e);
             return ResponseEntity.status(500).body("Error changing password"); // 500 Internal Server Error
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUser(@PathVariable("id") Long id) {
+        try {
+            UserResponse userResponse = userService.getUserById(id);
+            logger.info("User found: {}", userResponse);
+            return ResponseEntity.ok().body(userResponse);
+        }catch (Exception e) {
+            logger.error("Error getting user: {}", e);
+            return ResponseEntity.status(500).body("Error getting user");
         }
     }
 

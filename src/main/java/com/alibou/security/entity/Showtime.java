@@ -24,14 +24,17 @@ public class Showtime {
 
     @ManyToOne
     @JoinColumn(name = "movie_id")
+    @JsonBackReference
     private Movie movie;
 
     @ManyToOne
     @JoinColumn(name = "theater_id")
+    @JsonBackReference
     private Theater theater;
 
     @ManyToOne
     @JoinColumn(name = "hall_id")
+    @JsonBackReference
     private Hall hall;
 
     @Column(name = "show_time", nullable = false)

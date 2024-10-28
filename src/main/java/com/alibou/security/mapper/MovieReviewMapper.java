@@ -1,8 +1,8 @@
 package com.alibou.security.mapper;
 
 import com.alibou.security.entity.MovieReview;
-import com.alibou.security.model.request.MovieRequest;
 import com.alibou.security.model.request.MovieReviewRequest;
+import com.alibou.security.model.response.MovieReviewResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -11,9 +11,13 @@ import org.mapstruct.MappingTarget;
 public interface MovieReviewMapper {
 
     @Mapping(target = "id", ignore = true)
-    MovieReview toMovieReview(MovieRequest request);
+    @Mapping(target = "user.id", source = "userId")
+    @Mapping(target = "movie.id", source = "movieId")
+    MovieReview toMovieReview(MovieReviewRequest request);
 
 //    MovieResponse toMovieResponse(Movie movie);
+
+    MovieReviewResponse toMovieReviewResponse(MovieReview movieReview);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

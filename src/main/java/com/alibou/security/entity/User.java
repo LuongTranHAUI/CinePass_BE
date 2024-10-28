@@ -80,7 +80,7 @@ public class User implements UserDetails {
   @JsonManagedReference
   private List<Token> tokens = List.of();
 
-  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JsonManagedReference
   private Set<Ticket> tickets;
 
