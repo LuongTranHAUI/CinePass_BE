@@ -20,8 +20,8 @@ public class TheaterService {
     private final TheaterRepository repository;
     private final UserService userService;
 
-    public TheaterResponse add(TheaterRequest request, Long id) {
-        var existingTheater = repository.findById(id);
+    public TheaterResponse add(TheaterRequest request) {
+        var existingTheater = repository.findByName(request.getName());
         if (existingTheater.isPresent()) {
             throw new IllegalArgumentException("Theater available");
         }

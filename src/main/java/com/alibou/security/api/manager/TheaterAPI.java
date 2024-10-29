@@ -1,7 +1,6 @@
 package com.alibou.security.api.manager;
 
 import com.alibou.security.entity.Theater;
-import com.alibou.security.exception.MissingRequiredFieldsException;
 import com.alibou.security.model.request.TheaterRequest;
 import com.alibou.security.model.response.TheaterResponse;
 import com.alibou.security.service.TheaterService;
@@ -34,17 +33,11 @@ public class TheaterAPI {
     }
 
     @PostMapping
-    public ResponseEntity<?> addTheater(@RequestBody TheaterRequest request, @PathVariable Long id) {
+    public ResponseEntity<?> addTheater(@RequestBody TheaterRequest request) {
         try {
-            if (request == null) {
-                throw new MissingRequiredFieldsException("Request body is missing");
-            }
-            TheaterResponse response = service.add(request, id);
+            TheaterResponse response = service.add(request);
             logger.info("Theater saved successfully: {}", request);
             return ResponseEntity.status(201).body(response); // 201 Created
-        } catch (MissingRequiredFieldsException e) {
-            logger.error("Missing required fields in request: {}", e.getMessage());
-            return ResponseEntity.status(400).body(e.getMessage()); // 400 Bad Request
         } catch (Exception e) {
             logger.error("Failed to save theater: {}", e.getMessage());
             return ResponseEntity.status(500).body("Error saving theater"); // 500 Internal Server Error
@@ -54,15 +47,9 @@ public class TheaterAPI {
     @PutMapping("/{id}")
     public ResponseEntity<?> changeTheater(@RequestBody TheaterRequest request, @PathVariable Long id) {
         try {
-            if (request == null || id == null) {
-                throw new MissingRequiredFieldsException("Request body or id is missing");
-            }
             TheaterResponse response = service.change(request, id);
             logger.info("Updated theater successfully: {}", request);
             return ResponseEntity.status(200).body(response); // 200 OK
-        } catch (MissingRequiredFieldsException e) {
-            logger.error("Missing required fields or ID in request: {}", e.getMessage());
-            return ResponseEntity.status(400).body(e.getMessage()); // 400 Bad Request
         } catch (Exception e) {
             logger.error("Failed to update theater: {}", e.getMessage());
             return ResponseEntity.status(500).body("Error updating theater"); // 500 Internal Server Error

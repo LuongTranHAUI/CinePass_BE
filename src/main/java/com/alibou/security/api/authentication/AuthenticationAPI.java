@@ -1,7 +1,6 @@
 package com.alibou.security.api.authentication;
 
 import com.alibou.security.exception.EmailAlreadyInUseException;
-import com.alibou.security.exception.MissingRequiredFieldsException;
 import com.alibou.security.exception.PhoneAlreadyInUseException;
 import com.alibou.security.exception.UsernameAlreadyInUseException;
 import com.alibou.security.model.request.AuthenticationRequest;
@@ -30,16 +29,10 @@ public class AuthenticationAPI {
     private final LogoutService logoutService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody(required = false) RegisterRequest request) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
-            if (request == null) {
-                throw new MissingRequiredFieldsException("Request body is missing");
-            }
             AuthenticationResponse response = service.register(request);
             return ResponseEntity.ok(response); // 200 OK
-        } catch (MissingRequiredFieldsException e) {
-            logger.error("Error during registration: Missing required fields");
-            return ResponseEntity.status(400).body("Missing required fields"); // 400 Bad Request
         } catch (EmailAlreadyInUseException e) {
             logger.error("Error during registration: Email already in use");
             return ResponseEntity.status(409).body("Email is already in use"); // 409 Conflict
@@ -56,16 +49,10 @@ public class AuthenticationAPI {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> authenticate(@RequestBody(required = false) AuthenticationRequest request) {
+    public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) {
         try {
-            if (request == null) {
-                throw new MissingRequiredFieldsException("Request body is missing");
-            }
             AuthenticationResponse response = service.authenticate(request);
             return ResponseEntity.ok(response); // 200 OK
-        } catch (MissingRequiredFieldsException e) {
-            logger.error("Error during authentication: Missing required fields");
-            return ResponseEntity.status(400).body("Missing required fields"); // 400 Bad Request
         } catch (Exception e) {
             logger.error("Error during authentication: {}", e.getMessage());
             return ResponseEntity.status(401).body("Unauthorized"); // 401 Unauthorized
@@ -86,6 +73,7 @@ public class AuthenticationAPI {
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         logoutService.logout(request, response, authentication);
+        logger.info("User logged out successfully");
     }
 
     // Global exception handler

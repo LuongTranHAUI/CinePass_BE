@@ -3,7 +3,6 @@ package com.alibou.security.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,12 +25,12 @@ public class Theater {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @Column(unique = true, nullable = false)
     private String name;
 
     private String location;
 
-    @Column(name = "phone")
+    @Column(unique = true)
     private String phone;
 
     @Column(name = "created_at", updatable = false)
