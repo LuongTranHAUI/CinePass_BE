@@ -1,5 +1,6 @@
 package com.alibou.security.api.user;
 
+import com.alibou.security.entity.User;
 import com.alibou.security.exception.EmailAlreadyInUseException;
 import com.alibou.security.exception.MissingRequiredFieldsException;
 import com.alibou.security.exception.PhoneAlreadyInUseException;
@@ -7,6 +8,7 @@ import com.alibou.security.exception.UsernameAlreadyInUseException;
 import com.alibou.security.model.request.AuthenticationRequest;
 import com.alibou.security.model.request.RegisterRequest;
 import com.alibou.security.model.response.AuthenticationResponse;
+import com.alibou.security.repository.UserRepository;
 import com.alibou.security.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,6 +28,7 @@ public class AuthenticationAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationAPI.class);
     private final AuthenticationService service;
+    private final UserRepository userRepository;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody(required = false) RegisterRequest request) {
@@ -54,12 +58,31 @@ public class AuthenticationAPI {
 
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(@RequestBody(required = false) AuthenticationRequest request) {
+
+
         try {
             if (request == null) {
                 throw new MissingRequiredFieldsException("Request body is missing");
             }
-            AuthenticationResponse response = service.authenticate(request);
-            return ResponseEntity.ok(response); // 200 OK
+
+            Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+
+             if (optionalUser.isEmpty()) {
+                return ResponseEntity.badRequest().body("Email does not exist");
+            }
+
+            User user = optionalUser.get();
+
+             if (user.isStatus() == false) {
+
+                return ResponseEntity.status(400).body("Account is blocked.");
+
+            }
+             
+                AuthenticationResponse response = service.authenticate(request);
+                return ResponseEntity.ok(response); // 200 OK
+
+
         } catch (MissingRequiredFieldsException e) {
             logger.error("Error during authentication: Missing required fields");
             return ResponseEntity.status(400).body("Missing required fields"); // 400 Bad Request

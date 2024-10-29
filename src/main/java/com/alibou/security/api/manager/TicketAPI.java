@@ -47,7 +47,7 @@ public class TicketAPI {
             return ResponseEntity.badRequest().body(e.getMessage());
         }catch (Throwable e) {
             logger.error("Error saving ticket.",e.getMessage());
-            return ResponseEntity.status(500).body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

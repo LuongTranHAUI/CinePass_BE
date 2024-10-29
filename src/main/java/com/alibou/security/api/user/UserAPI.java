@@ -53,6 +53,18 @@ public class UserAPI {
         }
     }
 
+    @PutMapping("/block/{id}")
+    public ResponseEntity<?> updateStatusUser(@PathVariable("id") Long id){
+        try {
+            UserResponse userResponse = userService.blockUser(id);
+            logger.info("Block user: {}", userResponse);
+            return ResponseEntity.ok().body(userResponse);
+        }catch (Exception e) {
+            logger.error("Error blocking user: {}", e);
+            return ResponseEntity.status(500).body("Error blocking user");
+        }
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
         logger.error("Unhandled exception: {}", e.getMessage());

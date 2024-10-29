@@ -67,4 +67,15 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    public UserResponse blockUser(long id) {
+
+        User user = userRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ApplicationContextException("Not found user"));
+        if(user.isStatus()){
+            user.setStatus(false);
+            repository.save(user);
+        }
+        logger.info("User blocked: {}", user.getUsername());
+        return userMapper.toUserResponse(user);
+    }
+
 }

@@ -49,9 +49,9 @@ public class TicketService {
     private UserService userService;
 
     public TicketResponse createTicket(TicketRequest ticketRequest) {
-//        if(ticketRepository.existsById(ticketRequest.getId())) {
-//            throw new ApplicationContextException("Ticket already exists");
-//        }
+        if(ticketRepository.existsByShowtimeIdAndSeatNumber(ticketRequest.getShowtime_id(), ticketRequest.getSeatNumber())) {
+            throw new ApplicationContextException("Ticket already exists");
+        }
 
         Ticket ticket = ticketMapper.toTicket(ticketRequest);
         ticket.setId(null);
