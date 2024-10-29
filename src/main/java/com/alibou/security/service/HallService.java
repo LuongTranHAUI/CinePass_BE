@@ -21,6 +21,10 @@ public class HallService {
     private final TheaterRepository theaterRepository;
 
     public void add(HallRequest request) {
+        var existingHall = repository.findByName(request.getName());
+        if (existingHall.isPresent()) {
+            throw new IllegalArgumentException("Hall available");
+        }
         var hall = Hall.builder()
                 .name(request.getName())
                 .seatCapacity(request.getSeatCapacity())

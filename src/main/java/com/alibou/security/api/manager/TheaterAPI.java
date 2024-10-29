@@ -1,6 +1,5 @@
 package com.alibou.security.api.manager;
 
-import com.alibou.security.entity.Theater;
 import com.alibou.security.model.request.TheaterRequest;
 import com.alibou.security.model.response.TheaterResponse;
 import com.alibou.security.service.TheaterService;
@@ -21,9 +20,9 @@ public class TheaterAPI {
     private final TheaterService service;
 
     @GetMapping
-    public ResponseEntity<List<Theater>> findAllTheaters() {
+    public ResponseEntity<List<TheaterResponse>> findAllTheaters() {
         try {
-            List<Theater> theaters = service.findAll();
+            List<TheaterResponse> theaters = service.findAll();
             logger.info("Retrieved all theaters successfully");
             return ResponseEntity.ok(theaters); // 200 OK
         } catch (Exception e) {
