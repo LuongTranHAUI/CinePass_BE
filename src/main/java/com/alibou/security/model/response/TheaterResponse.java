@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TheaterResponse {
+    private Long id;
     private String name;
     private String location;
     private String phone;

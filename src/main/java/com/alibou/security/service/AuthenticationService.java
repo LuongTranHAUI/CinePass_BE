@@ -3,9 +3,6 @@ package com.alibou.security.service;
 import com.alibou.security.model.request.AuthenticationRequest;
 import com.alibou.security.model.response.AuthenticationResponse;
 import com.alibou.security.model.request.RegisterRequest;
-import com.alibou.security.exception.EmailAlreadyInUseException;
-import com.alibou.security.exception.PhoneAlreadyInUseException;
-import com.alibou.security.exception.UsernameAlreadyInUseException;
 import com.alibou.security.entity.Token;
 import com.alibou.security.repository.TokenRepository;
 import com.alibou.security.enums.TokenType;
@@ -45,15 +42,15 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (repository.findByEmail(request.getEmail()).isPresent()) {
-            throw new EmailAlreadyInUseException("Email is already in use");
+            throw new IllegalArgumentException("Email is already in use");
         }
 
         if (repository.findByUsername(request.getUsername()).isPresent()) {
-            throw new UsernameAlreadyInUseException("Username is already in use");
+            throw new IllegalArgumentException("Username is already in use");
         }
 
         if (repository.findByPhone(request.getPhone()).isPresent()) {
-            throw new PhoneAlreadyInUseException("Phone number is already in use");
+            throw new IllegalArgumentException("Phone number is already in use");
         }
 
         String roleName; // Default role

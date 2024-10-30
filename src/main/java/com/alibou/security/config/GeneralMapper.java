@@ -1,7 +1,10 @@
 package com.alibou.security.config;
 
+import com.alibou.security.entity.Hall;
 import com.alibou.security.entity.Theater;
+import com.alibou.security.model.response.HallResponse;
 import com.alibou.security.model.response.TheaterResponse;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Component;
@@ -17,12 +20,25 @@ public class GeneralMapper {
     }
 
     private void configureMapper() {
+        Converter<Theater, TheaterResponse> theaterToTheaterResponseConverter = context ->
+                modelMapper.map(context.getSource(), TheaterResponse.class);
         modelMapper.addMappings(new PropertyMap<Theater, TheaterResponse>() {
             @Override
             protected void configure() {
+                map().setId(source.getId());
                 map().setName(source.getName());
                 map().setLocation(source.getLocation());
                 map().setPhone(source.getPhone());
+            }
+        });
+        modelMapper.addMappings(new PropertyMap<Hall, HallResponse>() {
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setName(source.getName());
+                map().setSeatCapacity(source.getSeatCapacity());
+                map().setStatus(source.getStatus());
+                using(theaterToTheaterResponseConverter).map(source.getTheater()).setTheaterResponse(null);
             }
         });
     }

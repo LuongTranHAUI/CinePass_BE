@@ -1,7 +1,7 @@
 package com.alibou.security.api.manager;
 
-import com.alibou.security.entity.Hall;
 import com.alibou.security.model.request.HallRequest;
+import com.alibou.security.model.response.HallResponse;
 import com.alibou.security.service.HallService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,14 +19,14 @@ public class HallAPI {
     private final HallService service;
 
     @GetMapping
-    public ResponseEntity<List<Hall>> findAllHalls() {
+    public ResponseEntity<List<HallResponse>> findAllHalls() {
         try {
-            List<Hall> halls = service.findAll();
+            List<HallResponse> halls = service.findAll();
             logger.info("Retrieved all halls successfully");
-            return ResponseEntity.ok(halls); // 200 OK
+            return ResponseEntity.ok(halls);
         } catch (Exception e) {
             logger.error("Failed to retrieve halls: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body(null);
         }
     }
 
@@ -36,9 +36,12 @@ public class HallAPI {
             service.add(request);
             logger.info("Hall added successfully: {}", request);
             return ResponseEntity.status(201).body(request);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to add hall: {}", e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
             logger.error("Failed to add hall: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body("Internal server error");
         }
     }
 
@@ -47,10 +50,13 @@ public class HallAPI {
         try {
             service.change(request, id);
             logger.info("Hall updated successfully: {}", request);
-            return ResponseEntity.ok(request); // 200 OK
+            return ResponseEntity.ok(request);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to update hall: {}", e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
             logger.error("Failed to update hall: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body("Internal server error");
         }
     }
 
@@ -60,9 +66,18 @@ public class HallAPI {
             service.delete(id);
             logger.info("Hall deleted successfully with ID: {}", id);
             return ResponseEntity.status(204).body(id);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to delete hall with ID: {}", e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
             logger.error("Failed to delete hall with ID: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body("Internal server error");
         }
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception e) {
+        logger.error("Unhandled exception occurred: {}", e.getMessage());
+        return ResponseEntity.status(500).body("Internal server error");
     }
 }

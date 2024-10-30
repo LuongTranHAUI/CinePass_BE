@@ -26,7 +26,7 @@ public class TheaterService {
     public TheaterResponse add(TheaterRequest request) {
         var existingTheater = repository.findByName(request.getName());
         if (existingTheater.isPresent()) {
-            throw new IllegalArgumentException("Theater available");
+            throw new IllegalArgumentException("Theater's name was exist");
         }
         var theater = generalMapper.mapToEntity(request, Theater.class);
         theater.setCreatedBy(userService.getCurrentUserId());

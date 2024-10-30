@@ -1,8 +1,5 @@
 package com.alibou.security.api.authentication;
 
-import com.alibou.security.exception.EmailAlreadyInUseException;
-import com.alibou.security.exception.PhoneAlreadyInUseException;
-import com.alibou.security.exception.UsernameAlreadyInUseException;
 import com.alibou.security.model.request.AuthenticationRequest;
 import com.alibou.security.model.request.RegisterRequest;
 import com.alibou.security.model.response.AuthenticationResponse;
@@ -32,19 +29,10 @@ public class AuthenticationAPI {
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             AuthenticationResponse response = service.register(request);
-            return ResponseEntity.ok(response); // 200 OK
-        } catch (EmailAlreadyInUseException e) {
-            logger.error("Error during registration: Email already in use");
-            return ResponseEntity.status(409).body("Email is already in use"); // 409 Conflict
-        } catch (UsernameAlreadyInUseException e) {
-            logger.error("Error during registration: Username already in use");
-            return ResponseEntity.status(409).body("Username is already in use"); // 409 Conflict
-        } catch (PhoneAlreadyInUseException e) {
-            logger.error("Error during registration: Phone number already in use");
-            return ResponseEntity.status(409).body("Phone number is already in use"); // 409 Conflict
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             logger.error("Error during registration: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage()); // 400 Bad Request
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -52,10 +40,10 @@ public class AuthenticationAPI {
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) {
         try {
             AuthenticationResponse response = service.authenticate(request);
-            return ResponseEntity.ok(response); // 200 OK
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error during authentication: {}", e.getMessage());
-            return ResponseEntity.status(401).body("Unauthorized"); // 401 Unauthorized
+            return ResponseEntity.status(400).body(e.getMessage());
         }
     }
 
@@ -63,10 +51,10 @@ public class AuthenticationAPI {
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         try {
             service.refreshToken(request, response);
-            return ResponseEntity.ok().build(); // 200 OK
+            return ResponseEntity.ok().build();
         } catch (IOException e) {
             logger.error("Error during token refresh: {}", e.getMessage());
-            return ResponseEntity.status(401).body("Unauthorized"); // 401 Unauthorized
+            return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 
@@ -76,10 +64,9 @@ public class AuthenticationAPI {
         logger.info("User logged out successfully");
     }
 
-    // Global exception handler
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
-        logger.error("Unhandled exception: {}", e.getMessage());
-        return ResponseEntity.status(500).body("Internal Server Error"); // 500 Internal Server Error
+        logger.error("Unhandled exception occurred: {}", e.getMessage());
+        return ResponseEntity.status(500).body("Internal server error");
     }
 }

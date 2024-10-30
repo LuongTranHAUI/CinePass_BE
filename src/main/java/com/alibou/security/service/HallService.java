@@ -1,7 +1,9 @@
 package com.alibou.security.service;
 
+import com.alibou.security.config.GeneralMapper;
 import com.alibou.security.entity.Hall;
 import com.alibou.security.model.request.HallRequest;
+import com.alibou.security.model.response.HallResponse;
 import com.alibou.security.repository.HallRepository;
 import com.alibou.security.repository.TheaterRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,46 +21,47 @@ public class HallService {
     private final HallRepository repository;
     private final UserService userService;
     private final TheaterRepository theaterRepository;
+    private final GeneralMapper generalMapper;
 
-    public void add(HallRequest request) {
+    public HallResponse add(HallRequest request) {
         var existingHall = repository.findByName(request.getName());
         if (existingHall.isPresent()) {
-            throw new IllegalArgumentException("Hall available");
+            throw new IllegalArgumentException("Hall's name was exist");
         }
-        var hall = Hall.builder()
-                .name(request.getName())
-                .seatCapacity(request.getSeatCapacity())
-                .status(request.getStatus())
-                .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
-                .createdBy(userService.getCurrentUserId())
-                .theater(theaterRepository.findById(request.getTheaterId()).orElseThrow(() -> new IllegalArgumentException("Invalid theater ID")))
-                .build();
+        var hall = generalMapper.mapToEntity(request, Hall.class);
+        hall.setId(null);
+        hall.setCreatedBy(userService.getCurrentUserId());
+        hall.setCreatedAt(LocalDateTime.now());
+        hall.setTheater(theaterRepository.findById(request.getTheaterId()).orElseThrow(() -> new IllegalArgumentException("Invalid theater ID")));
         repository.save(hall);
         logger.info("Hall added successfully: {}", hall);
+        return generalMapper.mapToDTO(hall, HallResponse.class);
     }
 
-    public void change(HallRequest request, Long id) {
+    public HallResponse change(HallRequest request, Long id) {
         var existingHall = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Hall not found"));
-        var hall = Hall.builder()
-                .id(existingHall.getId())
-                .name(request.getName())
-                .seatCapacity(request.getSeatCapacity())
-                .status(request.getStatus())
-                .updatedAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
-                .updatedBy(userService.getCurrentUserId())
-                .theater(theaterRepository.findById(request.getTheaterId()).orElseThrow(() -> new IllegalArgumentException("Invalid theater ID")));
+        generalMapper.mapToEntity(request, existingHall);
+        existingHall.setUpdatedAt(LocalDateTime.now());
+        existingHall.setUpdatedBy(userService.getCurrentUserId());
+        existingHall.setTheater(theaterRepository.findById(request.getTheaterId()).orElseThrow(() -> new IllegalArgumentException("Invalid theater ID")));
+        repository.save(existingHall);
+        logger.info("Hall updated successfully: {}", existingHall);
+        return generalMapper.mapToDTO(existingHall, HallResponse.class);
     }
 
     public void delete(Long id) {
         var existingHall = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Hall not found"));
         repository.deleteById(existingHall.getId());
+        logger.info("Hall deleted successfully: {}", id);
     }
 
-    public List<Hall> findAll() {
+    public List<HallResponse> findAll() {
         List<Hall> halls = repository.findAll();
         logger.info("Halls retrieved successfully");
-        return halls;
+        return halls.stream()
+                .map(hall -> generalMapper.mapToDTO(hall, HallResponse.class))
+                .toList();
     }
 }
