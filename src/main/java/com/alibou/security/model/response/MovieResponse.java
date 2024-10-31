@@ -1,13 +1,9 @@
 package com.alibou.security.model.response;
 
-import com.alibou.security.entity.MovieReview;
-import com.alibou.security.entity.Showtime;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Set;
 
 @Data
@@ -19,9 +15,11 @@ public class MovieResponse {
 
     String title;
     String description;
+    String director;
+    String actor;
     int duration;
     String genre;
-    Date releaseDate;
+    LocalDateTime releaseDate;
     String posterUrl;
     String country;
     String summary;
@@ -31,8 +29,8 @@ public class MovieResponse {
     Long createdBy;
     Long updatedBy;
     Double rating;
-//    MovieReview review;
-//    Showtime showtimes;
-    Set<MovieReview> reviews;
-    Set<Showtime> showtimes;
+
+    Set<ShowtimeResponse> showtimes;
+    Set<MovieReviewResponse> reviews;
+
 }

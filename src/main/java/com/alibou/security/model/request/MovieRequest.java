@@ -2,6 +2,8 @@ package com.alibou.security.model.request;
 
 import com.alibou.security.entity.MovieReview;
 import com.alibou.security.entity.Showtime;
+import com.alibou.security.model.response.MovieReviewResponse;
+import com.alibou.security.model.response.ShowtimeResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,6 +21,8 @@ public class MovieRequest {
     Long id;
     String title;
     String description;
+    String director;
+    String actor;
     int duration;
     String genre;
     Date releaseDate;
@@ -31,8 +35,9 @@ public class MovieRequest {
     Long createdBy;
     Long updatedBy;
     Double rating;
-//    Long showtimeId;
-//    Long movieReviewId;
-    Set<MovieReview> reviews;
-    Set<Showtime> showtimes;
+    Long showtimeId;
+    Long movieReviewId;
+//    Set<MovieReview> reviews;
+//    Set<Showtime> showtimes;
+
 }

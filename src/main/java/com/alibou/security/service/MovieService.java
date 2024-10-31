@@ -7,6 +7,8 @@ import com.alibou.security.mapper.MovieMapper;
 import com.alibou.security.mapper.MovieReviewMapper;
 import com.alibou.security.model.request.MovieRequest;
 import com.alibou.security.model.response.MovieResponse;
+import com.alibou.security.model.response.MovieReviewResponse;
+import com.alibou.security.model.response.ShowtimeResponse;
 import com.alibou.security.repository.DiscountApplicationRepository;
 import com.alibou.security.repository.MovieRepository;
 import com.alibou.security.repository.MovieReviewRepository;
@@ -17,9 +19,12 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -57,9 +62,32 @@ public class MovieService {
 
         movie.setRating(averageRating);
         Movie savedMovie = movieRepository.save(movie);
-
         movieMapper.toMovieResponse(savedMovie);
-        return movieMapper.toMovieResponse(movie);
+
+        List<LocalDateTime> showtimes = showTimeRepository.findShowtimesByMovieId(id);
+
+        MovieResponse response = movieMapper.toMovieResponse(movie);
+
+        // Chuyển đổi LocalDateTime thành ShowtimeResponse
+        Set<ShowtimeResponse> showtimeResponses = showtimes.stream()
+                .map(showTime -> {
+                    ShowtimeResponse showtimeResponse = new ShowtimeResponse();
+                    showtimeResponse.setShowTime(showTime);
+                    return showtimeResponse;
+                })
+                .collect(Collectors.toSet());
+
+        response.setShowtimes(showtimeResponses);
+
+        List<?> movieReviews = movieReviewRepository.findMovieReviewByMovieId(id);
+        Set<MovieReviewResponse> movieReviewResponses = movieReviews.stream().map(movieReview -> {
+            MovieReviewResponse movieReviewResponse = new MovieReviewResponse();
+            movieReviewResponse.setContent((String) movieReview);
+            return movieReviewResponse;
+        }).collect(Collectors.toSet());
+        response.setReviews(movieReviewResponses);
+
+        return response;
     }
 
     public MovieResponse updateMovieById(long id, MovieRequest request) {

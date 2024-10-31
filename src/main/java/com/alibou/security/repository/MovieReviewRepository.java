@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,4 +18,7 @@ public interface MovieReviewRepository extends JpaRepository<MovieReview, Long> 
 
     @Query("SELECT COUNT(r) FROM MovieReview r WHERE r.movie.id = :movieId")
     int countReviewsByMovieId(@Param("movieId") Long movieId);
+
+    @Query("SELECT s.content FROM MovieReview s WHERE s.movie.id = :movieId")
+    List<String> findMovieReviewByMovieId(@Param("movieId") Long movieId);
 }

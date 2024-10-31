@@ -1,6 +1,8 @@
 package com.alibou.security.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,16 +27,19 @@ public class Showtime {
     @ManyToOne
     @JoinColumn(name = "movie_id")
     @JsonBackReference
+    @JsonIgnore
     private Movie movie;
 
     @ManyToOne
     @JoinColumn(name = "theater_id")
     @JsonBackReference
+    @JsonIgnore
     private Theater theater;
 
     @ManyToOne
     @JoinColumn(name = "hall_id")
     @JsonBackReference
+    @JsonIgnore
     private Hall hall;
 
     @Column(name = "show_time", nullable = false)
@@ -42,6 +47,7 @@ public class Showtime {
 
     @OneToMany(mappedBy = "showtime")
     @JsonManagedReference
+    @JsonIgnore
     private Set<Ticket> tickets;
 
 }
