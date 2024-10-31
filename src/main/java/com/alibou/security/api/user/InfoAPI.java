@@ -1,7 +1,7 @@
 package com.alibou.security.api.user;
 
-import com.alibou.security.entity.User;
 import com.alibou.security.model.request.ChangePasswordRequest;
+import com.alibou.security.model.response.UserResponse;
 import com.alibou.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -18,13 +18,13 @@ import java.security.Principal;
 public class InfoAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(InfoAPI.class);
-
     private final UserService service;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserInfo(@PathVariable Long id) {
         try {
-            User user = service.getUserById(id);
+            UserResponse user = service.getUserInfoById(id);
+            logger.info("Retrieved successfully theater with ID: {}", id);
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             logger.error("Failed to retrieve user info", e);

@@ -1,7 +1,7 @@
 package com.alibou.security.api.admin;
 
-import com.alibou.security.entity.Discount;
 import com.alibou.security.model.request.DiscountRequest;
+import com.alibou.security.model.response.DiscountResponse;
 import com.alibou.security.service.DiscountService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -21,36 +21,42 @@ public class DiscountAPI {
     @GetMapping
     public ResponseEntity<?> findAllDiscounts() {
         try {
-            List<Discount> discounts = service.findAll();
+            List<DiscountResponse> discounts = service.findAll();
             logger.info("Retrieved all discounts successfully");
-            return ResponseEntity.ok(discounts); // 200 OK
+            return ResponseEntity.ok(discounts);
         } catch (Exception e) {
             logger.error("Failed to retrieve discounts: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body(null);
         }
     }
 
     @PostMapping
     public ResponseEntity<?> addDiscount(@RequestBody DiscountRequest request) {
         try {
-            service.add(request);
-            logger.info("Discount added successfully: {}", request);
-            return ResponseEntity.ok(null); // 200 OK
+            DiscountResponse response = service.add(request);
+            logger.info("Discount added successfully: {}", response);
+            return ResponseEntity.status(201).body(response); // 200 OK
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to add discount: {}", e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
             logger.error("Failed to add discount: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body("Internal server error");
         }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateDiscount(@RequestBody DiscountRequest request, @PathVariable Long id) {
         try {
-            service.update(request,id);
-            logger.info("Discount updated successfully: {}", request);
-            return ResponseEntity.ok(null); // 200 OK
+            DiscountResponse response = service.update(request,id);
+            logger.info("Discount updated successfully: {}", response);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to update discount with ID: {}", e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Failed to update discount: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            logger.error("Failed to update discount with ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(500).body(e.getMessage());
         }
     }
 
@@ -59,11 +65,17 @@ public class DiscountAPI {
         try {
             service.delete(id);
             logger.info("Discount deleted successfully with ID: {}", id);
-            return ResponseEntity.ok(null); // 200 OK
+            return ResponseEntity.ok(null);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to delete discount with ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Failed to delete discount with ID: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            logger.error("Failed to delete discount with ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(500).body(e.getMessage());
         }
     }
-
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(500).body("Internal server error");
+    }
 }

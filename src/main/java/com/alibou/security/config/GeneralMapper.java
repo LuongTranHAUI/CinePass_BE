@@ -1,9 +1,7 @@
 package com.alibou.security.config;
 
-import com.alibou.security.entity.Hall;
-import com.alibou.security.entity.Theater;
-import com.alibou.security.model.response.HallResponse;
-import com.alibou.security.model.response.TheaterResponse;
+import com.alibou.security.entity.*;
+import com.alibou.security.model.response.*;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -39,6 +37,53 @@ public class GeneralMapper {
                 map().setSeatCapacity(source.getSeatCapacity());
                 map().setStatus(source.getStatus());
                 using(theaterToTheaterResponseConverter).map(source.getTheater()).setTheaterResponse(null);
+            }
+        });
+        modelMapper.addMappings(new PropertyMap<Notification, NotificationResponse>() {
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setType(source.getType());
+                map().setStatus(source.getStatus());
+                map().setMessage(source.getMessage());
+            }
+        });
+        modelMapper.addMappings(new PropertyMap<Snack, SnackResponse>() {
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setDescription(source.getDescription());
+                map().setPrice(source.getPrice());
+            }
+        });
+        modelMapper.addMappings(new PropertyMap<User, UserResponse>() {
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setUsername(source.getUsername());
+                map().setFullName(source.getFullName());
+                map().setEmail(source.getEmail());
+                map().setDateOfBirth(source.getDateOfBirth());
+                map().setPhone(source.getPhone());
+                map().setRole(source.getRole().getName());
+            }
+        });
+        modelMapper.addMappings(new PropertyMap<Discount, DiscountResponse>() {
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setCode(source.getCode());
+                map().setDescription(source.getDescription());
+                map().setDiscountPercent(source.getDiscountPercent());
+                map().setExpirationDate(source.getExpirationDate());
+            }
+        });
+        modelMapper.addMappings(new PropertyMap<PaymentMethod, PaymentMethodResponse>() {
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setName(source.getName());
+                map().setDescription(source.getDescription());
             }
         });
     }

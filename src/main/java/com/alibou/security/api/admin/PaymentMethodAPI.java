@@ -1,7 +1,7 @@
 package com.alibou.security.api.admin;
 
-import com.alibou.security.entity.PaymentMethod;
 import com.alibou.security.model.request.PaymentMethodRequest;
+import com.alibou.security.model.response.PaymentMethodResponse;
 import com.alibou.security.service.PaymentMethodService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -21,36 +21,42 @@ public class PaymentMethodAPI {
     @GetMapping
     public ResponseEntity<?> findAllPaymentMethods() {
         try {
-            List<PaymentMethod> paymentMethods = service.findAll();
+            List<PaymentMethodResponse> paymentMethods = service.findAll();
             logger.info("Retrieved all payment methods successfully");
-            return ResponseEntity.ok(paymentMethods); // 200 OK
+            return ResponseEntity.ok(paymentMethods);
         } catch (Exception e) {
             logger.error("Failed to retrieve payment methods: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body(null);
         }
     }
 
     @PostMapping
     public ResponseEntity<?> addPaymentMethod(@RequestBody PaymentMethodRequest request) {
         try {
-            service.add(request);
-            logger.info("Payment method added successfully: {}", request);
-            return ResponseEntity.ok(null); // 200 OK
+            PaymentMethodResponse response = service.add(request);
+            logger.info("Payment method added successfully: {}", response);
+            return ResponseEntity.status(201).body(response);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to add payment method: {}", e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
             logger.error("Failed to add payment method: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body("Internal server error");
         }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> changePaymentMethod(@RequestBody PaymentMethodRequest request, @PathVariable Long id) {
         try {
-            service.change(request, id);
+            PaymentMethodResponse response = service.change(request, id);
             logger.info("Payment method changed successfully: {}", request);
-            return ResponseEntity.ok(null); // 200 OK
+            return ResponseEntity.ok(null);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to update payment method with ID: {}", e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Failed to change payment method: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            logger.error("Failed to update payment method with ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(500).body(e.getMessage());
         }
     }
 
@@ -59,10 +65,18 @@ public class PaymentMethodAPI {
         try {
             service.delete(id);
             logger.info("Payment method deleted successfully with id: {}", id);
-            return ResponseEntity.ok(null); // 200 OK
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to delete payment method with ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Failed to delete payment method with id: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            logger.error("Failed to delete payment method with ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(500).body(e.getMessage());
         }
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(500).body("Internal server error");
     }
 }

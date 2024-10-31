@@ -5,12 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentMethodResponse {
+public class UserResponse {
     private Long id;
-    private String name;
-    private String description;
+    private String username;
+    private String fullName;
+    private String email;
+    private Date DateOfBirth;
+    private String role;
+    private String phone;
 }

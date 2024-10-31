@@ -1,7 +1,7 @@
 package com.alibou.security.api.manager;
 
-import com.alibou.security.entity.Snack;
 import com.alibou.security.model.request.SnackRequest;
+import com.alibou.security.model.response.SnackResponse;
 import com.alibou.security.service.SnackService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,38 +19,44 @@ public class SnackAPI {
     private final SnackService service;
 
     @GetMapping
-    public ResponseEntity<List<Snack>> findAllSnacks() {
+    public ResponseEntity<List<SnackResponse>> findAllSnacks() {
         try {
-            List<Snack> snacks = service.findAll();
+            List<SnackResponse> snacks = service.findAll();
             logger.info("Retrieved all snacks successfully");
-            return ResponseEntity.ok(snacks); // 200 OK
+            return ResponseEntity.ok(snacks);
         } catch (Exception e) {
             logger.error("Failed to retrieve snacks: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body(null);
         }
     }
 
     @PostMapping
     public ResponseEntity<?> addSnack(@RequestBody SnackRequest request) {
         try {
-            service.add(request);
+            SnackResponse response = service.add(request);
             logger.info("Snack added successfully: {}", request);
-            return ResponseEntity.status(201).body(request);
+            return ResponseEntity.status(201).body(response);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to delete hall with ID: {}", e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
             logger.error("Failed to add snack: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body(null);
         }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> changeSnack(@RequestBody SnackRequest request, @PathVariable Long id) {
         try {
-            service.change(request, id);
-            logger.info("Snack updated successfully: {}", request);
-            return ResponseEntity.ok(request); // 200 OK
+            SnackResponse response = service.change(request, id);
+            logger.info("Snack updated successfully: {}", response);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to delete hall with ID: {}", e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Failed to update snack: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            logger.error("Failed to delete theater with ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(500).body(e.getMessage());
         }
     }
 
@@ -59,11 +65,10 @@ public class SnackAPI {
         try {
             service.delete(id);
             logger.info("Snack deleted successfully: {}", id);
-            return ResponseEntity.ok(null); // 200 OK
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
             logger.error("Failed to delete snack: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body(e.getMessage());
         }
     }
-
 }

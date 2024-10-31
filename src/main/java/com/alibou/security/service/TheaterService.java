@@ -61,10 +61,4 @@ public class TheaterService {
                 .map(theater -> generalMapper.mapToDTO(theater, TheaterResponse.class))
                 .collect(Collectors.toList());
     }
-
-    public TheaterResponse findById(Long id) {
-        var theater = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Theater not found"));
-        return generalMapper.mapToDTO(theater, TheaterResponse.class);
-    }
 }

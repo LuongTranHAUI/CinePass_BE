@@ -1,12 +1,15 @@
 package com.alibou.security.api.manager;
 
 import com.alibou.security.model.request.NotificationRequest;
+import com.alibou.security.model.response.NotificationResponse;
 import com.alibou.security.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/management/notifications")
@@ -16,37 +19,37 @@ public class NotificationAPI {
     private final NotificationService service;
 
     @GetMapping
-    public ResponseEntity<?> getNotifications() {
+    public ResponseEntity<?> findAllNotifications() {
         try {
-            service.findAll();
-            return ResponseEntity.ok().build(); // 200 OK
+            List<NotificationResponse> notifications = service.findAll();
+            return ResponseEntity.ok(notifications);
         } catch (Exception e) {
             logger.error("Failed to retrieve notifications: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(400).body(null);
         }
     }
 
     @PostMapping
     public ResponseEntity<?> addNotification(@RequestBody NotificationRequest request) {
         try {
-            service.add(request);
+            NotificationResponse response = service.add(request);
             logger.info("Notification added successfully: {}", request);
-            return ResponseEntity.ok().build(); // 200 OK
+            return ResponseEntity.status(201).body(response);
         } catch (Exception e) {
             logger.error("Failed to add notification: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(400).body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> changeNotification(@RequestBody NotificationRequest request, @PathVariable Long id) {
         try {
-            service.change(request, id);
+            NotificationResponse response = service.change(request, id);
             logger.info("Notification updated successfully: {}", request);
-            return ResponseEntity.ok().build(); // 200 OK
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Failed to update notification: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(400).body("Missing or invalid request body");
         }
     }
 
@@ -55,10 +58,15 @@ public class NotificationAPI {
         try {
             service.delete(id);
             logger.info("Notification deleted successfully with ID: {}", id);
-            return ResponseEntity.ok().build(); // 200 OK
+            return ResponseEntity.status(204).body(null);
         } catch (Exception e) {
             logger.error("Failed to delete notification with ID: {}", e.getMessage());
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(400).body("Error deleting notification");
         }
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception e) {
+        return ResponseEntity.status(500).body(e.getMessage());
     }
 }

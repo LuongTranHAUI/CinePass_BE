@@ -1,6 +1,6 @@
 package com.alibou.security.api.user;
 
-import com.alibou.security.entity.Notification;
+import com.alibou.security.model.response.NotificationResponse;
 import com.alibou.security.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ public class NotificationUserAPI {
     @GetMapping("/{userId}")
     public ResponseEntity<?> getNotificationsByUserId(@PathVariable Long userId) {
         try {
-            List<Notification> notifications = service.findByUserId(userId);
+            List<NotificationResponse> notifications = service.findByUserId(userId);
             return ResponseEntity.ok(notifications); // 200 OK
         } catch (Exception e) {
             logger.error("Failed to retrieve notifications for user ID {}: {}", userId, e.getMessage());

@@ -20,16 +20,12 @@ public class Snack {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String description;
 
-    @Column(name = "price")
     private BigDecimal price;
-
-    @Column(name = "type")
-    private String type;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

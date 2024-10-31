@@ -11,12 +11,9 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SnackRequest {
-    @NotNull
     private String name;
     @NotNull
     private String description;
     @NotNull
     private BigDecimal price;
-    @NotNull
-    private String type;
 }
