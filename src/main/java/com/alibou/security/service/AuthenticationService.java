@@ -3,6 +3,9 @@ package com.alibou.security.service;
 import com.alibou.security.model.request.AuthenticationRequest;
 import com.alibou.security.model.response.AuthenticationResponse;
 import com.alibou.security.model.request.RegisterRequest;
+import com.alibou.security.exception.EmailAlreadyInUseException;
+import com.alibou.security.exception.PhoneAlreadyInUseException;
+import com.alibou.security.exception.UsernameAlreadyInUseException;
 import com.alibou.security.entity.Token;
 import com.alibou.security.repository.TokenRepository;
 import com.alibou.security.enums.TokenType;
@@ -17,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -50,7 +54,7 @@ public class AuthenticationService {
         }
 
         if (repository.findByPhone(request.getPhone()).isPresent()) {
-            throw new IllegalArgumentException("Phone number is already in use");
+            throw new PhoneAlreadyInUseException("Phone number is already in use");
         }
 
         String roleName; // Default role
@@ -94,8 +98,18 @@ public class AuthenticationService {
                 new UsernamePasswordAuthenticationToken(
                         userDetails.getUsername(),
                         request.getPassword()
+
                 )
         );
+        var user = repository.findByEmail(request.getEmail())
+                .orElseThrow();
+
+        if(user.isStatus() == false) {
+
+           logger.info("User is blocked.");
+           return null;
+        }
+
         var user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or email"));
 
@@ -107,6 +121,7 @@ public class AuthenticationService {
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
+        logger.info("User authenticated successfully: {}", request.getEmail());
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)

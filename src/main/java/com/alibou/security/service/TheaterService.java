@@ -31,6 +31,11 @@ public class TheaterService {
         var theater = generalMapper.mapToEntity(request, Theater.class);
         theater.setCreatedBy(userService.getCurrentUserId());
         theater.setCreatedAt(LocalDateTime.now());
+        var theater = Theater.builder()
+                .name(request.getName())
+                .location(request.getLocation())
+                .totalSeats(request.getTotalSeats())
+                .build();
         repository.save(theater);
         logger.info("Theater added successfully: {}", theater);
         return generalMapper.mapToDTO(theater, TheaterResponse.class);

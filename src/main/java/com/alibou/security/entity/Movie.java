@@ -2,6 +2,9 @@ package com.alibou.security.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,6 +54,7 @@ public class Movie {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Column(name = "created_by", updatable = false)
+    @Column(name = "created_by",updatable = false)
     private Long createdBy;
 
     @Column(name = "updated_by", updatable = false)
@@ -60,9 +64,16 @@ public class Movie {
 
     @OneToMany(mappedBy = "movie")
     @JsonManagedReference
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    @JsonIgnoreProperties("movie")
     private Set<MovieReview> reviews;
 
     @OneToMany(mappedBy = "movie")
     @JsonManagedReference
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    @JsonIgnoreProperties("movie")
+    @JsonIgnore
     private Set<Showtime> showtimes;
 }

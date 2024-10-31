@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "discount_applications")
 public class DiscountApplication {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,4 +42,5 @@ public class DiscountApplication {
 
     @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
+
 }

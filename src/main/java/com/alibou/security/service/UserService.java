@@ -3,6 +3,9 @@ package com.alibou.security.service;
 import com.alibou.security.config.GeneralMapper;
 import com.alibou.security.entity.Role;
 import com.alibou.security.entity.User;
+import com.alibou.security.mapper.UserMapper;
+import com.alibou.security.model.response.UserResponse;
+import com.alibou.security.repository.UserRepository;
 import com.alibou.security.model.request.ChangePasswordRequest;
 import com.alibou.security.model.response.UserResponse;
 import com.alibou.security.repository.RoleRepository;
@@ -10,6 +13,8 @@ import com.alibou.security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContextException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +33,8 @@ public class UserService {
     private final UserRepository repository;
     private final RoleRepository roleRepository;
     private final GeneralMapper generalMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
         if (request == null) {
@@ -85,6 +92,31 @@ public class UserService {
     public User getUserById(Long id) {
         return repository.findById(id).orElseThrow(() -> new IllegalStateException("User not found"));
     }
+
+    public Long getCurrentUserId() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var user = (User) authentication.getPrincipal();
+        return user.getId();
+    }
+
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ApplicationContextException("Not found user"));
+
+        return userMapper.toUserResponse(user);
+    }
+
+    public UserResponse blockUser(long id) {
+
+        User user = userRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ApplicationContextException("Not found user"));
+        if(user.isStatus()){
+            user.setStatus(false);
+            repository.save(user);
+        }
+        logger.info("User blocked: {}", user.getUsername());
+        return userMapper.toUserResponse(user);
+    }
+
+}
 
     public UserResponse getUserInfoById(Long id) {
         User users = repository.findById(id).orElseThrow(() -> new IllegalStateException("User not found"));
