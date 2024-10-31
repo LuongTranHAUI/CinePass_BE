@@ -3,9 +3,6 @@ package com.alibou.security.service;
 import com.alibou.security.model.request.AuthenticationRequest;
 import com.alibou.security.model.response.AuthenticationResponse;
 import com.alibou.security.model.request.RegisterRequest;
-import com.alibou.security.exception.EmailAlreadyInUseException;
-import com.alibou.security.exception.PhoneAlreadyInUseException;
-import com.alibou.security.exception.UsernameAlreadyInUseException;
 import com.alibou.security.entity.Token;
 import com.alibou.security.repository.TokenRepository;
 import com.alibou.security.enums.TokenType;
@@ -22,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,18 +38,19 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (repository.findByEmail(request.getEmail()).isPresent()) {
-            throw new EmailAlreadyInUseException("Email is already in use");
+            throw new IllegalArgumentException("Email is already in use");
         }
 
         if (repository.findByUsername(request.getUsername()).isPresent()) {
-            throw new UsernameAlreadyInUseException("Username is already in use");
+            throw new IllegalArgumentException("Username is already in use");
         }
 
         if (repository.findByPhone(request.getPhone()).isPresent()) {
-            throw new PhoneAlreadyInUseException("Phone number is already in use");
+            throw new IllegalArgumentException("Phone number is already in use");
         }
 
         String roleName; // Default role
@@ -70,8 +70,8 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .dateOfBirth(Date.valueOf(request.getYear() + "-" + request.getMonth() + "-" + request.getDay()))
                 .phone(request.getPhone())
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
+                .updatedAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
                 .role(userRole)
                 .build();
         var savedUser = repository.save(user);
@@ -86,19 +86,27 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        String usernameOrEmail = request.getUsernameOrEmail();
+        UserDetails userDetails = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or email"));
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        userDetails.getUsername(),
                         request.getPassword()
                 )
         );
-        var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
+        var user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or email"));
+
+        if (!user.isStatus()) {
+            throw new UsernameNotFoundException("User account is deactivated");
+        }
+
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
-        logger.info("User authenticated successfully: {}", request.getEmail());
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -117,7 +125,7 @@ public class AuthenticationService {
     }
 
     private void revokeAllUserTokens(User user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+        var validUserTokens = tokenRepository.findAllValidTokenByUser(Math.toIntExact(user.getId()));
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {

@@ -9,17 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TheaterRequest {
-
-    @NotNull
-    private Integer id;
-
     @NotNull
     private String name;
-
     @NotNull
     private String location;
-
     @NotNull
-    private int totalSeats;
+    private String phone;
 
 }

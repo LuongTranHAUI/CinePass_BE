@@ -3,6 +3,7 @@ package com.alibou.security.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public enum Permission {
 
@@ -13,8 +14,11 @@ public enum Permission {
     MANAGER_READ("management:read"),
     MANAGER_UPDATE("management:update"),
     MANAGER_CREATE("management:create"),
-    MANAGER_DELETE("management:delete");
+    MANAGER_DELETE("management:delete"),
+    USER_READ("user:read"),
+    USER_UPDATE("user:update"),
+    USER_CREATE("user:create"),
+    USER_DELETE("user:delete");
 
-    @Getter
     private final String permission;
 }

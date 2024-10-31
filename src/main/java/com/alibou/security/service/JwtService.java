@@ -30,7 +30,9 @@ public class JwtService {
   private long refreshExpiration;
 
   public String extractUsername(String token) {
-    return extractClaim(token, Claims::getSubject);
+    String usernameOrEmail = extractClaim(token, Claims::getSubject);
+    logger.info("Extracted username or email from JWT: {}", usernameOrEmail);
+    return usernameOrEmail;
   }
 
   public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
