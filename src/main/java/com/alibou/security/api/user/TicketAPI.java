@@ -2,7 +2,6 @@ package com.alibou.security.api.user;
 
 import com.alibou.security.entity.Ticket;
 import com.alibou.security.enums.TicketStatus;
-import com.alibou.security.mapper.TicketMapper;
 import com.alibou.security.model.request.TicketRequest;
 import com.alibou.security.model.response.TicketResponse;
 import com.alibou.security.repository.TicketRepository;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +26,6 @@ public class TicketAPI {
     private final Logger logger = LoggerFactory.getLogger(TicketAPI.class);
     private final TicketRepository ticketRepository;
 
-    @Autowired
-    TicketMapper ticketMapper;
-
     @PostMapping
     public ResponseEntity<?> createTick(@RequestBody TicketRequest ticketRequest) {
         try {
@@ -40,7 +35,7 @@ public class TicketAPI {
             return ResponseEntity.ok(ticketResponse);
 
         } catch (Throwable e) {
-            logger.error("Error saving ticket.",e.getMessage());
+            logger.error("Error saving ticket.", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -50,8 +45,8 @@ public class TicketAPI {
         try {
             List<Ticket> tickets = ticketService.getAllTicket();
             return ResponseEntity.ok(tickets);
-        }catch (Throwable e) {
-            logger.error("Error getting all tickets.",e.getMessage());
+        } catch (Throwable e) {
+            logger.error("Error getting all tickets.", e.getMessage());
             return ResponseEntity.status(500).body(null);
         }
     }
@@ -64,8 +59,8 @@ public class TicketAPI {
             logger.info("Ticket found: {}", ticketResponse);
             return ResponseEntity.status(200).body(ticketResponse);
 
-        }catch (Throwable e) {
-            logger.error("Error getting ticket.",e.getMessage());
+        } catch (Throwable e) {
+            logger.error("Error getting ticket with id: {}", e.getMessage(), id);
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
@@ -81,7 +76,7 @@ public class TicketAPI {
             logger.info("Ticket updated: {}", ticketResponse);
             return ResponseEntity.ok(ticketResponse);
         } catch (Throwable e) {
-            logger.error("Error saving ticket.",e.getMessage());
+            logger.error("Error saving ticket with id: {}", e.getMessage(), id);
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
@@ -93,7 +88,7 @@ public class TicketAPI {
             logger.info("Ticket deleted: {}", id);
             return ResponseEntity.status(200).body(null);
         } catch (Exception e) {
-            logger.error("Error delete ticket.",e.getMessage());
+            logger.error("Delete ticket failed.", e.getMessage());
             return ResponseEntity.status(500).body(null);
         }
     }
@@ -102,17 +97,11 @@ public class TicketAPI {
     public ResponseEntity<?> getExpiredTicket(@PathVariable long id) {
         Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ApplicationContextException("Ticket not found"));
 
-        ResponseEntity<?> response = ticketService.CheckExpiredTicket(ticket);
-
         if (ticket.getStatus() == TicketStatus.EXPIRED) {
             return ResponseEntity.ok("Ticket expired");
-        }
-
-        else if (ticket.getStatus() == TicketStatus.USED) {
+        } else if (ticket.getStatus() == TicketStatus.USED) {
             return ResponseEntity.ok("Ticket used");
-        }
-
-        else  {
+        } else {
             return ResponseEntity.ok("Ticket is available");
         }
 
@@ -122,7 +111,7 @@ public class TicketAPI {
     @PutMapping("/status/{id}")
     public ResponseEntity<?> updateTicketStatus(@PathVariable long id, @RequestBody TicketStatus status, @RequestHeader("UserId") Long userId) {
 
-        TicketResponse response = ticketService.CheckAndUpdateTicketStatus(id,status,userId);
+        TicketResponse response = ticketService.CheckAndUpdateTicketStatus(id, status, userId);
 
         return ResponseEntity.ok("Update ticket status is successful");
     }
