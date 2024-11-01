@@ -24,8 +24,9 @@ public class NotificationService {
 
     public NotificationResponse add(NotificationRequest request) {
         var notification = generalMapper.mapToEntity(request, Notification.class);
+        notification.setId(null);
         notification.setStatus(NotificationStatus.valueOf("UNREAD"));
-        notification.setUser(UserService.getCurrentUser());
+        notification.setUser(userService.getUserById(request.getUserId()));
         notification.setCreatedBy(userService.getCurrentUserId());
         notification.setCreatedAt(LocalDateTime.now());
         repository.save(notification);

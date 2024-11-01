@@ -74,6 +74,7 @@ public class User implements UserDetails {
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonManagedReference
+    @ToString.Exclude
     private List<Token> tokens = List.of();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)

@@ -44,7 +44,7 @@ public class UserAPI {
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable("id") Long id) {
         try {
-            UserResponse userResponse = userService.getUserById(id);
+            UserResponse userResponse = userService.getUserInfoById(id);
             logger.info("User found: {}", userResponse);
             return ResponseEntity.ok().body(userResponse);
         }catch (Exception e) {

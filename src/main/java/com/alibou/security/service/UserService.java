@@ -82,9 +82,8 @@ public class UserService {
         return user.getId();
     }
 
-    public UserResponse getUserById(Long id) {
-        User user = userRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ApplicationContextException("Not found user"));
-        return userMapper.toUserResponse(user);
+    public User getUserById(Long id) {
+        return userRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ApplicationContextException("Not found user"));
     }
 
     public UserResponse blockUser(long id) {
