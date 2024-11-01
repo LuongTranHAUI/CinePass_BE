@@ -7,6 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class GeneralMapper {
 
@@ -65,6 +67,10 @@ public class GeneralMapper {
                 map().setEmail(source.getEmail());
                 map().setDateOfBirth(source.getDateOfBirth());
                 map().setPhone(source.getPhone());
+                map().setUpdatedAt(LocalDateTime.now());
+                map().setUpdatedBy(source.getId());
+                map().setCreatedAt(LocalDateTime.now());
+                map().setCreatedBy(source.getId());
             }
         });
         modelMapper.addMappings(new PropertyMap<Discount, DiscountResponse>() {

@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -108,6 +109,18 @@ public class UserService {
         return users.stream()
                 .map(user -> generalMapper.mapToDTO(user, UserResponse.class))
                 .toList();
+    }
+
+    public UserResponse updateUserInfo(Long id, UserResponse user) {
+        User users = repository.findById(id).orElseThrow(() -> new IllegalStateException("User not found"));
+        users.setFullName(user.getFullName());
+        users.setDateOfBirth(user.getDateOfBirth());
+        users.setPhone(user.getPhone());
+        users.setUpdatedBy(id);
+        users.setUpdatedAt(LocalDateTime.now());
+        repository.save(users);
+        logger.info("User updated successfully with id: {}", id);
+        return generalMapper.mapToDTO(users, UserResponse.class);
     }
 
     public UserResponse changeRole(Long id, Long roleId) {

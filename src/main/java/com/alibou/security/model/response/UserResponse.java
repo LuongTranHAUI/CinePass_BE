@@ -1,17 +1,11 @@
 package com.alibou.security.model.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import com.alibou.security.entity.Role;
-import com.alibou.security.entity.Ticket;
+import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 @Builder
@@ -25,4 +19,8 @@ public class UserResponse {
     private String email;
     private Date DateOfBirth;
     private String phone;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Long createdBy;
+    private Long updatedBy;
 }

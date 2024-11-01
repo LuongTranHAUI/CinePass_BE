@@ -1,5 +1,6 @@
 package com.alibou.security.api.user;
 
+import com.alibou.security.entity.User;
 import com.alibou.security.model.request.ChangePasswordRequest;
 import com.alibou.security.model.response.UserResponse;
 import com.alibou.security.service.UserService;
@@ -13,12 +14,13 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/user/info")
+@RequestMapping("/api/users/info")
 @RequiredArgsConstructor
 public class InfoAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(InfoAPI.class);
     private final UserService service;
+    private final UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserInfo(@PathVariable Long id) {
@@ -29,6 +31,21 @@ public class InfoAPI {
         } catch (Exception e) {
             logger.error("Failed to retrieve user info", e);
             return ResponseEntity.status(500).body("Failed to retrieve user info");
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUserInfo(@RequestBody UserResponse user, @PathVariable Long id) {
+        try {
+            UserResponse response = service.updateUserInfo(id,user);
+            logger.info("Updated user info successfully: {}", user);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to update user info: {}", e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Failed to update user info: {}", e.getMessage());
+            return ResponseEntity.status(500).body("Internal server error");
         }
     }
 
