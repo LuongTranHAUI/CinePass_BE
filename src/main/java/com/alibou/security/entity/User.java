@@ -71,10 +71,10 @@ public class User implements UserDetails {
     @ToString.Exclude
     private Role role;
 
-  @Builder.Default
-  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-  @JsonManagedReference
-  private List<Token> tokens = List.of();
+    @Builder.Default
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Token> tokens = List.of();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonManagedReference

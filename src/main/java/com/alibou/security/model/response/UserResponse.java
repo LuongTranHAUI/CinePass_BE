@@ -24,12 +24,5 @@ public class UserResponse {
     private String fullName;
     private String email;
     private Date DateOfBirth;
-    private Role role;
     private String phone;
-    boolean status;
-    LocalDateTime createdAt = LocalDateTime.now();
-    LocalDateTime updatedAt = LocalDateTime.now();
-    Long createdBy;
-    Long updatedBy;
-    Set<Ticket> tickets;
 }
