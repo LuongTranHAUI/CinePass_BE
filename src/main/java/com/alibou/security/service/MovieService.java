@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -106,14 +107,15 @@ public class MovieService {
         return movieMapper.toMovieResponse(movieRepository.save(movie));
     }
 
+    @Transactional
     public void deleteMovieById(long id) {
-
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new ApplicationContextException("Movie not found"));
 
-        movieReviewRepository.deleteById(movie.getId());
-        showTimeRepository.deleteById(movie.getId());
-        discountApplicationRepository.deleteById(movie.getId());
+        // Delete associated showtimes
+        showTimeRepository.deleteByMovieId(movie.getId());
+
+        // Delete movie
         movieRepository.deleteById(id);
     }
 

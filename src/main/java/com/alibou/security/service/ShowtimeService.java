@@ -7,13 +7,11 @@ import com.alibou.security.entity.Theater;
 import com.alibou.security.mapper.ShowtimeMapper;
 import com.alibou.security.model.request.ShowtimeRequest;
 import com.alibou.security.model.response.ShowtimeResponse;
-import com.alibou.security.repository.HallRepository;
-import com.alibou.security.repository.MovieRepository;
-import com.alibou.security.repository.ShowTimeRepository;
-import com.alibou.security.repository.TheaterRepository;
+import com.alibou.security.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,6 +28,9 @@ public class ShowtimeService {
 
     @Autowired
     TheaterRepository theaterRepository;
+
+    @Autowired
+    TicketRepository ticketRepository;
 
     @Autowired
     HallRepository hallRepository;
@@ -50,7 +51,15 @@ public class ShowtimeService {
         return showtimeMapper.toshowtimeResponse(showTimeRepository.save(showtime));
     }
 
-    public void deleteShowtime(long id){
+    @Transactional
+    public void deleteShowtime(long id) {
+        Showtime showtime = showTimeRepository.findById(id)
+                .orElseThrow(() -> new ApplicationContextException("Showtime not found"));
+
+        // Delete associated tickets
+        ticketRepository.deleteByShowtimeId(showtime.getId());
+
+        // Delete showtime
         showTimeRepository.deleteById(id);
     }
 
@@ -86,5 +95,4 @@ public class ShowtimeService {
             throw new ApplicationContextException("Had the movie") ;
         }
     }
-
 }

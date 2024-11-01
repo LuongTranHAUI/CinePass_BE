@@ -44,7 +44,7 @@ public class Showtime {
     @Column(name = "show_time", nullable = false)
     private LocalDateTime showTime;
 
-    @OneToMany(mappedBy = "showtime")
+    @OneToMany(mappedBy = "showtime",  cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "showtime-ticket")
     private Set<Ticket> tickets;
 }

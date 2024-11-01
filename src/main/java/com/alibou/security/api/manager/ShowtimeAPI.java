@@ -24,7 +24,7 @@ public class ShowtimeAPI {
     @Autowired
     ShowtimeService showtimeService;
 
-    @PostMapping(consumes = "application/json")
+    @PostMapping
     public ResponseEntity<?> addShowtime(@RequestBody ShowtimeRequest request) {
         try {
             ShowtimeResponse showtimeResponse = showtimeService.addShowtime(request);
