@@ -48,7 +48,7 @@ public class UserAPI {
             logger.info("User found: {}", userResponse);
             return ResponseEntity.ok().body(userResponse);
         }catch (Exception e) {
-            logger.error("Error getting user: {}", e);
+            logger.error("Error getting user: {}", e.getMessage());
             return ResponseEntity.status(500).body("Error getting user");
         }
     }

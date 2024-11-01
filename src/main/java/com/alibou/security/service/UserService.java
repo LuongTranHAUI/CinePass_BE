@@ -96,6 +96,16 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    public UserResponse unblockUser(long id) {
+        User user = userRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ApplicationContextException("Not found user"));
+        if (!user.isStatus()) {
+            user.setStatus(true);
+            repository.save(user);
+        }
+        logger.info("User unblocked: {}", user.getUsername());
+        return userMapper.toUserResponse(user);
+    }
+
     public UserResponse getUserInfoById(Long id) {
         User users = repository.findById(id).orElseThrow(() -> new IllegalStateException("User not found"));
         return generalMapper.mapToDTO(users, UserResponse.class);

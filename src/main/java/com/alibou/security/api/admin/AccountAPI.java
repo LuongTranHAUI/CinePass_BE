@@ -44,4 +44,28 @@ public class AccountAPI {
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
+
+    @PutMapping("/block/{id}")
+    public ResponseEntity<?> updateStatusUser(@PathVariable Long id){
+        try {
+            UserResponse userResponse = service.blockUser(id);
+            logger.info("Block user: {}", userResponse);
+            return ResponseEntity.ok().body(userResponse);
+        }catch (Exception e) {
+            logger.error("Error blocking user: {}", e);
+            return ResponseEntity.status(500).body("Error blocking user");
+        }
+    }
+
+    @PutMapping("/unblock/{id}")
+    public ResponseEntity<?> unblockUser(@PathVariable Long id){
+        try {
+            UserResponse userResponse = service.unblockUser(id);
+            logger.info("Unblock user: {}", userResponse);
+            return ResponseEntity.ok().body(userResponse);
+        }catch (Exception e) {
+            logger.error("Error unblocking user: {}", e);
+            return ResponseEntity.status(500).body("Error unblocking user");
+        }
+    }
 }

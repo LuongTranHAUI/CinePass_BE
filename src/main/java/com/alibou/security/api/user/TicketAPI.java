@@ -1,4 +1,4 @@
-package com.alibou.security.api.manager;
+package com.alibou.security.api.user;
 
 import com.alibou.security.entity.Ticket;
 import com.alibou.security.enums.TicketStatus;
@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
