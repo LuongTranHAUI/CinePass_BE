@@ -1,7 +1,6 @@
 package com.alibou.security.api.user;
 
 import com.alibou.security.entity.MovieReview;
-import com.alibou.security.exception.MissingRequiredFieldsException;
 import com.alibou.security.model.request.MovieReviewRequest;
 import com.alibou.security.model.response.MovieReviewResponse;
 import com.alibou.security.service.MovieReviewService;
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
@@ -32,8 +30,8 @@ public class MovieReviewAPI {
         try {
             List<MovieReview> movieReviews = movieReviewService.findAllMovieReviews();
             return ResponseEntity.ok(movieReviews);
-        }catch (Exception e) {
-            logger.error("Error show all comment.",e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error show all comment.", e.getMessage());
             return ResponseEntity.status(500).body(null);
         }
     }
@@ -44,12 +42,8 @@ public class MovieReviewAPI {
             MovieReviewResponse movieReviewResponse = movieReviewService.findById(id);
             logger.info(movieReviewResponse.toString());
             return ResponseEntity.status(200).body(movieReviewResponse);
-        } catch (MissingRequiredFieldsException e){
-
-            logger.error("Missing requires MovieReview.",e.getMessage());
-            return ResponseEntity.status(400).body(null);
-        }catch (Exception e) {
-            logger.error("Error show comment.",e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error show comment.", e.getMessage());
             return ResponseEntity.status(500).body(null);
         }
     }
@@ -58,14 +52,11 @@ public class MovieReviewAPI {
     public ResponseEntity<?> updateMovieReview(@PathVariable("id") long id, @RequestBody MovieReviewRequest movieReviewRequest) {
 
         try {
-            MovieReviewResponse movieReviewResponse = movieReviewService.updateMovieReview(id,movieReviewRequest);
+            MovieReviewResponse movieReviewResponse = movieReviewService.updateMovieReview(id, movieReviewRequest);
             logger.info(movieReviewResponse.toString());
             return ResponseEntity.status(200).body(movieReviewResponse);
-        }catch (MissingRequiredFieldsException e){
-            logger.error("Missing requires MovieReview.",e.getMessage());
-            return ResponseEntity.status(400).body(null);
-        }catch (Exception e) {
-            logger.error("Error update comment.",e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error update comment.", e.getMessage());
             return ResponseEntity.status(500).body(null);
         }
 
@@ -77,26 +68,21 @@ public class MovieReviewAPI {
             MovieReviewResponse movieReviewResponse = movieReviewService.createMovieReview(movieReviewRequest);
             logger.info(movieReviewResponse.toString());
             return ResponseEntity.status(200).body(movieReviewResponse);
-        }catch (MissingRequiredFieldsException e){
-            logger.error("Missing requires MovieReview.",e.getMessage());
-            return ResponseEntity.status(400).body(null);
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error creating movie review: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body("An error occurred while creating the movie review.");
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteMovieReview(@PathVariable long id){
+    public ResponseEntity<?> deleteMovieReview(@PathVariable long id) {
         try {
             movieReviewService.deleteMovieReview(id);
-            logger.info("Delete MovieReview with id {}",id);
+            logger.info("Delete MovieReview with id {}", id);
             return ResponseEntity.status(200).body(null);
         } catch (Exception e) {
-            logger.error("Error delete comment.",e.getMessage());
+            logger.error("Error delete comment.", e.getMessage());
             return ResponseEntity.status(500).body(null);
         }
     }
-
-
 }

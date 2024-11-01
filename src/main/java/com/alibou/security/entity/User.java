@@ -70,25 +70,16 @@ public class User implements UserDetails {
     @JsonBackReference
     @ToString.Exclude
     private Role role;
-  @ManyToOne(fetch = FetchType.EAGER) // Changed to EAGER fetching
-  @JoinColumn(name = "role_id")
-  @JsonBackReference
-  private Role role;
 
   @Builder.Default
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
   @JsonManagedReference
   private List<Token> tokens = List.of();
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Token> tokens = List.of();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonManagedReference
     @ToString.Exclude
     private Set<Ticket> tickets;
-  @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JsonManagedReference
-  private Set<Ticket> tickets;
 
     @OneToMany(mappedBy = "user")
     @JsonManagedReference

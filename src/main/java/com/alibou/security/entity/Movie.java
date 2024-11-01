@@ -54,7 +54,6 @@ public class Movie {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Column(name = "created_by", updatable = false)
-    @Column(name = "created_by",updatable = false)
     private Long createdBy;
 
     @Column(name = "updated_by", updatable = false)
@@ -62,15 +61,11 @@ public class Movie {
 
     private Double rating;
 
-    @OneToMany(mappedBy = "movie")
-    @JsonManagedReference
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
     @JsonIgnoreProperties("movie")
     private Set<MovieReview> reviews;
 
-    @OneToMany(mappedBy = "movie")
-    @JsonManagedReference
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
     @JsonIgnoreProperties("movie")

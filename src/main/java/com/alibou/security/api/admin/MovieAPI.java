@@ -1,7 +1,6 @@
 package com.alibou.security.api.admin;
 
 import com.alibou.security.entity.Movie;
-import com.alibou.security.exception.MissingRequiredFieldsException;
 import com.alibou.security.mapper.MovieMapper;
 import com.alibou.security.model.request.MovieRequest;
 import com.alibou.security.model.response.MovieResponse;
@@ -36,11 +35,6 @@ public class MovieAPI {
             logger.info("Movie added successfully: {}",movieRequest);
             return ResponseEntity.status(201).body(movieResponse);
 
-        } catch (MissingRequiredFieldsException e) {
-
-            logger.error("Missing required fields: {}", e.getMessage());
-            return ResponseEntity.status(400).body(e.getMessage());
-
         } catch (Throwable e) {
             logger.error("Error saving Movie: {}", e.getMessage());
             return ResponseEntity.status(500).body(e.getMessage());
@@ -71,9 +65,6 @@ public class MovieAPI {
             logger.info("Movie retrieved successfully: {}", movieResponse);
             return ResponseEntity.status(200).body(movieResponse);
 
-        } catch (MissingRequiredFieldsException e) {
-            logger.error("Missing required fields: {}", e.getMessage());
-            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
             logger.error("Error getting movie: {}", e.getMessage());
             return ResponseEntity.status(500).body(null);
@@ -83,17 +74,10 @@ public class MovieAPI {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateMovie(@PathVariable int id, @RequestBody MovieRequest movieRequest) {
         try {
-            if (movieRequest == null) {
-                throw new MissingRequiredFieldsException("Request body or id is missing");
-            }
-
             MovieResponse movieResponse = movieService.updateMovieById(id, movieRequest);
             logger.info("Movie updated successfully: {}", movieRequest);
             return ResponseEntity.status(200).body(movieResponse);
 
-        }catch (MissingRequiredFieldsException e) {
-            logger.error("Missing required fields: {}", e.getMessage());
-            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
             logger.error("Error saving movie: {}", e.getMessage());
             return ResponseEntity.status(500).body(null);

@@ -3,8 +3,10 @@ package com.alibou.security.api.authentication;
 import com.alibou.security.model.request.AuthenticationRequest;
 import com.alibou.security.model.request.RegisterRequest;
 import com.alibou.security.model.response.AuthenticationResponse;
+import com.alibou.security.model.response.UserResponse;
 import com.alibou.security.service.AuthenticationService;
 import com.alibou.security.service.LogoutService;
+import com.alibou.security.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -24,6 +27,7 @@ public class AuthenticationAPI {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationAPI.class);
     private final AuthenticationService service;
     private final LogoutService logoutService;
+    private final UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -62,6 +66,18 @@ public class AuthenticationAPI {
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         logoutService.logout(request, response, authentication);
         logger.info("User logged out successfully");
+    }
+
+    @PutMapping("/block/{id}")
+    public ResponseEntity<?> updateStatusUser(@PathVariable("id") Long id){
+        try {
+            UserResponse userResponse = userService.blockUser(id);
+            logger.info("Block user: {}", userResponse);
+            return ResponseEntity.ok().body(userResponse);
+        }catch (Exception e) {
+            logger.error("Error blocking user: {}", e);
+            return ResponseEntity.status(500).body("Error blocking user");
+        }
     }
 
     @ExceptionHandler(Exception.class)

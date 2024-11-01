@@ -49,6 +49,4 @@ public class Discount {
 
     @OneToMany(mappedBy = "discount")
     private Set<DiscountApplication> discountApplications;
-    @JsonManagedReference
-    private Set<DiscountApplication> discountApplications;
 }

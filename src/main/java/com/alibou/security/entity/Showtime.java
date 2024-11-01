@@ -27,33 +27,24 @@ public class Showtime {
     private Long id;
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "movie_id")
-    @JsonBackReference
-    @JsonIgnore
+    @JsonBackReference(value = "movie-showtime")
     private Movie movie;
 
     @ManyToOne
     @JoinColumn(name = "theater_id")
-    @JsonBackReference
-    @JsonIgnore
-    @JsonBackReference
+    @JsonBackReference(value = "theater-showtime")
     private Theater theater;
 
     @ManyToOne
     @JoinColumn(name = "hall_id")
-    @JsonBackReference
-    @JsonBackReference
-    @JsonIgnore
+    @JsonBackReference(value = "hall-showtime")
     private Hall hall;
 
     @Column(name = "show_time", nullable = false)
     private LocalDateTime showTime;
 
     @OneToMany(mappedBy = "showtime")
-    @JsonManagedReference
-    @JsonIgnore
-    @JsonManagedReference
+    @JsonManagedReference(value = "showtime-ticket")
     private Set<Ticket> tickets;
-
 }

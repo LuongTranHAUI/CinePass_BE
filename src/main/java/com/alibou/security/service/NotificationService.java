@@ -25,7 +25,7 @@ public class NotificationService {
     public NotificationResponse add(NotificationRequest request) {
         var notification = generalMapper.mapToEntity(request, Notification.class);
         notification.setStatus(NotificationStatus.valueOf("UNREAD"));
-        notification.setUser(userService.getUserById(request.getUserId()));
+        notification.setUser(UserService.getCurrentUser());
         notification.setCreatedBy(userService.getCurrentUserId());
         notification.setCreatedAt(LocalDateTime.now());
         repository.save(notification);
@@ -38,7 +38,7 @@ public class NotificationService {
                 .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
         generalMapper.mapToEntity(request, existingNotification);
         existingNotification.setStatus(NotificationStatus.valueOf("UNREAD"));
-        existingNotification.setUser(userService.getUserById(request.getUserId()));
+        existingNotification.setUser(UserService.getCurrentUser());
         existingNotification.setCreatedBy(userService.getCurrentUserId());
         existingNotification.setCreatedAt(LocalDateTime.now());
         repository.save(existingNotification);

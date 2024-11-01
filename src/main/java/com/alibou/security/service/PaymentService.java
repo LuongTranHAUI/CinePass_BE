@@ -101,7 +101,7 @@ public class PaymentService {
                 .amount(paymentRequest.getAmount())
                 .currency(paymentRequest.getCurrency())
                 .status(PaymentStatus.PROCESSING)
-                .user(userService.getCurrentUser())
+                .user(UserService.getCurrentUser())
                 .paymentMethod(paymentMethod)
                 .createdBy(userService.getCurrentUserId())
                 .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
@@ -117,29 +117,17 @@ public class PaymentService {
         Map<String, String> fields = new HashMap<>();
         for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
             String fieldName = null;
-            try {
-                fieldName = URLEncoder.encode(params.nextElement(), StandardCharsets.US_ASCII.toString());
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
+            fieldName = URLEncoder.encode(params.nextElement(), StandardCharsets.US_ASCII);
             String fieldValue = null;
-            try {
-                fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.US_ASCII.toString());
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
+            fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.US_ASCII);
             if (fieldValue != null && !fieldValue.isEmpty()) {
                 fields.put(fieldName, fieldValue);
             }
         }
 
         String vnp_SecureHash = request.getParameter("vnp_SecureHash");
-        if (fields.containsKey("vnp_SecureHashType")) {
-            fields.remove("vnp_SecureHashType");
-        }
-        if (fields.containsKey("vnp_SecureHash")) {
-            fields.remove("vnp_SecureHash");
-        }
+        fields.remove("vnp_SecureHashType");
+        fields.remove("vnp_SecureHash");
 
         String signValue = VnPayConfig.hashAllFields(fields);
         JsonObject response = new JsonObject();
@@ -196,7 +184,7 @@ public class PaymentService {
                 .status(PaymentStatus.COMPLETED)
                 .paymentMethod(paymentMethodRepository.findById(request.getPaymentMethodId())
                         .orElseThrow(() -> new IllegalArgumentException("Payment Method not found")))
-                .user(userService.getCurrentUser())
+                .user(UserService.getCurrentUser())
                 .createdBy(userService.getCurrentUserId())
                 .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
                 .build();

@@ -65,7 +65,7 @@ public class GeneralMapper {
                 map().setEmail(source.getEmail());
                 map().setDateOfBirth(source.getDateOfBirth());
                 map().setPhone(source.getPhone());
-                map().setRole(source.getRole().getName());
+                map().setRole(source.getRole());
             }
         });
         modelMapper.addMappings(new PropertyMap<Discount, DiscountResponse>() {

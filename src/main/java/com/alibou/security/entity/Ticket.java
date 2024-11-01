@@ -1,6 +1,5 @@
 package com.alibou.security.entity;
 
-import com.alibou.security.enums.SeatStatus;
 import com.alibou.security.enums.TicketStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -42,9 +41,6 @@ public class Ticket {
 
     @Column(name = "seat_number", nullable = false)
     private String seatNumber;
-
-    @Enumerated(EnumType.STRING)
-    private SeatStatus seatStatus;
 
     @Column(name = "ticket_type", nullable = false)
     private String ticketType;

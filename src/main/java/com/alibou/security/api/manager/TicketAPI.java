@@ -2,7 +2,6 @@ package com.alibou.security.api.manager;
 
 import com.alibou.security.entity.Ticket;
 import com.alibou.security.enums.TicketStatus;
-import com.alibou.security.exception.MissingRequiredFieldsException;
 import com.alibou.security.mapper.TicketMapper;
 import com.alibou.security.model.request.TicketRequest;
 import com.alibou.security.model.response.TicketResponse;
@@ -41,11 +40,7 @@ public class TicketAPI {
             logger.info("Ticket created: {}", ticketResponse);
             return ResponseEntity.ok(ticketResponse);
 
-        } catch (MissingRequiredFieldsException e) {
-
-            logger.error("Missing require Ticket.",e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             logger.error("Error saving ticket.",e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -70,9 +65,6 @@ public class TicketAPI {
             logger.info("Ticket found: {}", ticketResponse);
             return ResponseEntity.status(200).body(ticketResponse);
 
-        }catch (MissingRequiredFieldsException e) {
-            logger.error("Missing require Ticket.",e.getMessage());
-            return ResponseEntity.status(400).body(e.getMessage());
         }catch (Throwable e) {
             logger.error("Error getting ticket.",e.getMessage());
             return ResponseEntity.status(500).body(e.getMessage());
@@ -83,16 +75,13 @@ public class TicketAPI {
     public ResponseEntity<?> updateTicket(@PathVariable long id, @RequestBody TicketRequest ticketRequest) {
         try {
             if (ticketRequest == null) {
-                throw new MissingRequiredFieldsException("Missing required fields");
+                throw new IllegalArgumentException("Missing required fields");
             }
 
             TicketResponse ticketResponse = ticketService.updateTicket(id, ticketRequest);
             logger.info("Ticket updated: {}", ticketResponse);
             return ResponseEntity.ok(ticketResponse);
-        }catch (MissingRequiredFieldsException e) {
-            logger.error("Missing required fields.",e.getMessage());
-            return ResponseEntity.status(400).body(e.getMessage());
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             logger.error("Error saving ticket.",e.getMessage());
             return ResponseEntity.status(500).body(e.getMessage());
         }
@@ -104,7 +93,7 @@ public class TicketAPI {
             ticketService.deleteTicket(id);
             logger.info("Ticket deleted: {}", id);
             return ResponseEntity.status(200).body(null);
-        }catch (MissingRequiredFieldsException e) {
+        } catch (Exception e) {
             logger.error("Error delete ticket.",e.getMessage());
             return ResponseEntity.status(500).body(null);
         }
