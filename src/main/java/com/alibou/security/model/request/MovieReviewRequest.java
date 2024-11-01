@@ -17,8 +17,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class MovieReviewRequest {
-
-    Long id;
+//    Long id;
 //    User user;
 //    Movie movie;
     Long userId;

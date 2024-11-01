@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users/MovieReview")
+@RequestMapping("/api/users/reviews")
 @Slf4j
 public class MovieReviewAPI {
     private final MovieReviewService movieReviewService;
@@ -79,7 +79,7 @@ public class MovieReviewAPI {
         try {
             movieReviewService.deleteMovieReview(id);
             logger.info("Delete MovieReview with id {}", id);
-            return ResponseEntity.status(200).body(null);
+            return ResponseEntity.status(204).body(null);
         } catch (Exception e) {
             logger.error("Error delete comment.", e.getMessage());
             return ResponseEntity.status(500).body(null);
