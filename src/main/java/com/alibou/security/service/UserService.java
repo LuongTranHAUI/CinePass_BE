@@ -45,8 +45,7 @@ public class UserService {
             throw new IllegalStateException("Invalid user authentication");
         }
 
-        var authenticationToken = (UsernamePasswordAuthenticationToken) connectedUser;
-        var user = (User) authenticationToken.getPrincipal();
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
         // Check if the current password is correct
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
@@ -123,13 +122,13 @@ public class UserService {
         return generalMapper.mapToDTO(users, UserResponse.class);
     }
 
-    public UserResponse changeRole(Long id, Long roleId) {
+    public void changeRole(Long id, Long roleId) {
         User user = repository.findById(id).orElseThrow(() -> new IllegalStateException("User not found"));
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new IllegalStateException("Role not found"));
         user.setRole(role);
         repository.save(user);
         logger.info("Role changed successfully for user with id: {}", id);
-        return generalMapper.mapToDTO(user, UserResponse.class);
+        generalMapper.mapToDTO(user, UserResponse.class);
     }
 
     public void deleteUserById(Long id) {

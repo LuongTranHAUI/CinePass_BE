@@ -1,6 +1,5 @@
 package com.alibou.security.api.user;
 
-import com.alibou.security.entity.User;
 import com.alibou.security.model.request.ChangePasswordRequest;
 import com.alibou.security.model.response.UserResponse;
 import com.alibou.security.service.UserService;
@@ -20,7 +19,6 @@ public class InfoAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(InfoAPI.class);
     private final UserService service;
-    private final UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserInfo(@PathVariable Long id) {

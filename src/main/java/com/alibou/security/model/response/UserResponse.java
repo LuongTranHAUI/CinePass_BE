@@ -1,6 +1,5 @@
 package com.alibou.security.model.response;
 
-import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
