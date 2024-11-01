@@ -14,10 +14,12 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MovieReviewResponse {
 
-    @ToString.Exclude
-    User user;
-    @ToString.Exclude
-    Movie movie;
+//    @ToString.Exclude
+//    User user;
+//    @ToString.Exclude
+//    Movie movie;
+    Long userId;
+    Long movieId;
     String content;
     Double rating;
     LocalDateTime createdAt = LocalDateTime.now();

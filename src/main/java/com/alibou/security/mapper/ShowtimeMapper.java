@@ -16,6 +16,9 @@ public interface ShowtimeMapper {
     @Mapping(target = "tickets", ignore = true) // Exclude tickets field
     Showtime toShowtime(ShowtimeRequest request);
 
+    @Mapping(target = "movieTitle", source = "showtime.movie.title")
+    @Mapping(target = "theaterName", source = "showtime.theater.name")
+    @Mapping(target = "hallName", source = "showtime.hall.name")
     ShowtimeResponse toshowtimeResponse(Showtime showtime);
 
     @Mapping(target = "id", ignore = true)

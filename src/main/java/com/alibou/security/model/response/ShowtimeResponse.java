@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ShowtimeResponse {
-    Movie movie;
-    Theater theater;
-    Hall hall;
-    LocalDateTime showTime;
+     LocalDateTime showTime;
+     String movieTitle;
+     String theaterName;
+     String hallName;
 }

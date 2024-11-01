@@ -1,6 +1,7 @@
 package com.alibou.security.api.manager;
 
 import com.alibou.security.entity.Showtime;
+import com.alibou.security.mapper.ShowtimeMapper;
 import com.alibou.security.model.request.ShowtimeRequest;
 import com.alibou.security.model.response.ShowtimeResponse;
 import com.alibou.security.service.ShowtimeService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/management/showtime")
@@ -23,6 +25,9 @@ public class ShowtimeAPI {
 
     @Autowired
     ShowtimeService showtimeService;
+
+    @Autowired
+    ShowtimeMapper showtimeMapper;
 
     @PostMapping
     public ResponseEntity<?> addShowtime(@RequestBody ShowtimeRequest request) {
@@ -37,11 +42,14 @@ public class ShowtimeAPI {
     }
 
     @GetMapping
-    public ResponseEntity<List<Showtime>> getShowtimeList() {
+    public ResponseEntity<List<ShowtimeResponse>> getShowtimeList() {
         try {
             List<Showtime> showtimes = showtimeService.getAllShowtime();
+            List<ShowtimeResponse> showtimeResponses = showtimes.stream()
+                    .map(showtimeMapper::toshowtimeResponse) // Chuyển `Showtime` thành `ShowtimeResponse`
+                    .collect(Collectors.toList());
             logger.info("Showtime list retrieved successfully");
-            return ResponseEntity.status(200).body(showtimes);
+            return ResponseEntity.status(200).body(showtimeResponses);
         } catch (Exception e) {
             logger.error("Error getting showtime: {}", e.getMessage());
             return ResponseEntity.status(500).body(null);
