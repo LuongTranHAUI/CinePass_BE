@@ -62,6 +62,7 @@ public class GeneralMapper {
             @Override
             protected void configure() {
                 map().setId(source.getId());
+                map().setRoleId(source.getRole().getId());
                 map().setUsername(source.getUsername());
                 map().setFullName(source.getFullName());
                 map().setEmail(source.getEmail());
