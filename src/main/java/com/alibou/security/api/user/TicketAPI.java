@@ -93,17 +93,21 @@ public class TicketAPI {
         }
     }
 
-    @GetMapping("/expired/{id}")
-    public ResponseEntity<?> getExpiredTicket(@PathVariable long id) {
-        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ApplicationContextException("Ticket not found"));
-
-        if (ticket.getStatus() == TicketStatus.EXPIRED) {
-            return ResponseEntity.ok("Ticket expired");
-        } else if (ticket.getStatus() == TicketStatus.USED) {
-            return ResponseEntity.ok("Ticket used");
-        } else {
-            return ResponseEntity.ok("Ticket is available");
+    @GetMapping("/expired")
+    public ResponseEntity<?> getExpiredTicket( @RequestHeader("UserId") Long userId) {
+//        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ApplicationContextException("Ticket not found"));
+            List<Ticket> tickets = ticketService.getTicketByUserId(userId);
+        for (Ticket ticket : tickets) {
+            ticketService.CheckExpiredTicket(ticket, userId);
         }
+        return ResponseEntity.ok(tickets);
+//        if (ticket.getStatus() == TicketStatus.EXPIRED) {
+//            return ResponseEntity.ok("Ticket expired");
+//        } else if (ticket.getStatus() == TicketStatus.USED) {
+//            return ResponseEntity.ok("Ticket used");
+//        } else {
+//            return ResponseEntity.ok("Ticket is available");
+//        }
 
 //        return ResponseEntity.ok(ticketMapper.toTicketResponse(ticket));
     }

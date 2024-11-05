@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -110,11 +111,11 @@ public class TicketService {
         return ticketMapper.toTicketResponse(ticket);
     }
 
-    public ResponseEntity<?> CheckExpiredTicket(Ticket ticket) {
+    public ResponseEntity<List<Ticket>> CheckExpiredTicket(Ticket ticket, long userId) {
 
         if (ticket == null || ticket.getShowtime() == null) {
             logger.error("Ticket or Showtime is null");
-            return ResponseEntity.ok("Ticket or Showtime is null");
+            return ResponseEntity.ok(Collections.emptyList());
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -123,17 +124,23 @@ public class TicketService {
         if (now.isBefore(showtime)) {
             if (ticket.getStatus() == TicketStatus.USED) {
                 logger.info("TicketID: " + ticket.getId() + " is used");
-                return ResponseEntity.ok("TicketID: " + ticket.getId() + " is used");
+                return ResponseEntity.ok(Collections.emptyList());
+            }else{
+                return ResponseEntity.ok(Collections.emptyList());
             }
         } else if (now.isAfter(showtime) && ticket.getStatus() != TicketStatus.EXPIRED) {
-            ticket.setStatus(TicketStatus.EXPIRED);
-            ticket.setUpdatedAt(LocalDateTime.now());
-            ticketRepository.save(ticket);
-            logger.info("TicketID: " + ticket.getId() + " has been expired");
-            return ResponseEntity.ok("TicketID: " + ticket.getId() + " has been expired");
+            if(ticket.getStatus() != TicketStatus.USED) {
+                ticket.setStatus(TicketStatus.EXPIRED);
+                ticket.setUpdatedAt(LocalDateTime.now());
+                ticketRepository.save(ticket);
+                logger.info("TicketID: " + ticket.getId() + " has been expired");
+                return ResponseEntity.ok(Collections.singletonList(ticket));
+            }else {
+                return ResponseEntity.ok(Collections.emptyList());
+            }
         }
 
-        return ResponseEntity.ok("TicketID: " + ticket.getId() + " is still valid");
+        return ResponseEntity.ok(Collections.emptyList());
     }
 
     public TicketResponse CheckAndUpdateTicketStatus(long ticketId, TicketStatus status, long userId) {
