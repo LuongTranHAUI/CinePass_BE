@@ -2,8 +2,6 @@ package com.alibou.security.entity;
 
 import com.alibou.security.enums.TicketStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +10,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -38,6 +38,10 @@ public class Ticket {
     @JoinColumn(name = "discount_application_id")
     @JsonBackReference
     private DiscountApplication discountApplication;
+
+    @OneToMany(mappedBy = "ticket")
+    @JsonBackReference
+    private Set<PaymentTicket> paymentTickets = new HashSet<>();
 
     @Column(name = "seat_number", nullable = false)
     private String seatNumber;

@@ -1,12 +1,14 @@
 package com.alibou.security.service;
 
 import com.alibou.security.config.VnPayConfig;
-import com.alibou.security.entity.Payment;
-import com.alibou.security.entity.PaymentMethod;
+import com.alibou.security.entity.*;
 import com.alibou.security.enums.PaymentStatus;
+import com.alibou.security.enums.TicketStatus;
 import com.alibou.security.model.request.PaymentRequest;
 import com.alibou.security.repository.PaymentMethodRepository;
 import com.alibou.security.repository.PaymentRepository;
+import com.alibou.security.repository.PaymentTicketRepository;
+import com.alibou.security.repository.TicketRepository;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -29,8 +32,10 @@ public class PaymentService {
     private final PaymentMethodRepository paymentMethodRepository;
     private final UserService userService;
     private final HttpServletRequest httpServletRequest;
+    private final TicketRepository ticketRepository;
+    private final PaymentTicketRepository paymentTicketRepository;
 
-    public JsonObject processVNPayment(PaymentRequest paymentRequest) {
+    public JsonObject processVNPayment(PaymentRequest paymentRequest, User user) {
         String orderType = "other";
         long amount = paymentRequest.getAmount().multiply(new BigDecimal(100)).longValue();
         String bankCode = paymentRequest.getBankCode();
@@ -100,12 +105,25 @@ public class PaymentService {
                 .amount(paymentRequest.getAmount())
                 .currency(paymentRequest.getCurrency())
                 .status(PaymentStatus.PROCESSING)
-                .user(UserService.getCurrentUser())
+                .user(user)
                 .paymentMethod(paymentMethod)
                 .createdBy(userService.getCurrentUserId())
                 .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
                 .build();
         paymentRepository.save(payment);
+
+        for (Long ticketId : paymentRequest.getTicketIds()) {
+            logger.info("Processing ticketId: {}", ticketId);
+            Ticket ticket = ticketRepository.findById(ticketId)
+                    .orElseThrow(() -> new IllegalArgumentException("Ticket not found: " + ticketId));
+            PaymentTicket paymentTicket = PaymentTicket.builder()
+                    .payment(payment)
+                    .ticket(ticket)
+                    .createdBy(userService.getCurrentUserId())
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            paymentTicketRepository.save(paymentTicket);
+        }
 
         JsonObject response = new JsonObject();
         response.addProperty("paymentUrl", paymentUrl);
@@ -145,6 +163,10 @@ public class PaymentService {
                     if (checkOrderStatus) {
                         if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
                             payment.setStatus(PaymentStatus.COMPLETED);
+                            for(PaymentTicket paymentTicket : payment.getPaymentTickets()) {
+                                paymentTicket.getTicket().setStatus(TicketStatus.PAID);
+                                ticketRepository.save(paymentTicket.getTicket());
+                            }
                             response.addProperty("message", "GD thanh cong");
                         } else {
                             payment.setStatus(PaymentStatus.FAILED);

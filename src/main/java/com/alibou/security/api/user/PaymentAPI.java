@@ -1,8 +1,10 @@
 package com.alibou.security.api.user;
 
 import com.alibou.security.entity.Payment;
+import com.alibou.security.entity.User;
 import com.alibou.security.model.request.PaymentRequest;
 import com.alibou.security.service.PaymentService;
+import com.alibou.security.service.UserService;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +22,13 @@ import java.util.List;
 public class PaymentAPI {
     private static final Logger logger = LoggerFactory.getLogger(PaymentAPI.class);
     private final PaymentService paymentService;
+    private final UserService userService;
 
     @PostMapping("/vnpay-process")
     public ResponseEntity<String> processPayment(@RequestBody PaymentRequest paymentRequest) {
         try {
-            JsonObject response = paymentService.processVNPayment(paymentRequest);
+            User user = userService.getUserById(paymentRequest.getUserId());
+            JsonObject response = paymentService.processVNPayment(paymentRequest,user);
             return ResponseEntity.ok(response.toString());
         } catch (Exception e) {
             logger.error("Payment processing failed", e);
@@ -48,6 +52,4 @@ public class PaymentAPI {
             return ResponseEntity.status(500).body(null);
         }
     }
-
-
 }

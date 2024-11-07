@@ -1,3 +1,4 @@
+// Payment.java
 package com.alibou.security.entity;
 
 import com.alibou.security.enums.PaymentStatus;
@@ -10,6 +11,10 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Data
 @Builder
@@ -26,10 +31,10 @@ public class Payment {
     private String transactionId;
 
     @Column(name = "amount", nullable = false)
-    private BigDecimal amount; // Tổng giá trị của giao dịch
+    private BigDecimal amount;
 
     @Column(name = "currency")
-    private String currency; // Thêm trường currency
+    private String currency;
 
     @Column(name = "status")
     private PaymentStatus status;
@@ -55,4 +60,21 @@ public class Payment {
     @JoinColumn(name = "payment_method_id", nullable = false)
     @JsonBackReference
     private PaymentMethod paymentMethod;
+
+    @OneToMany(mappedBy = "payment")
+    @JsonBackReference
+    private Set<PaymentTicket> paymentTickets = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Payment payment = (Payment) o;
+        return id != null && id.equals(payment.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

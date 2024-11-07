@@ -8,6 +8,7 @@ import com.alibou.security.model.request.ChangePasswordRequest;
 import com.alibou.security.model.response.UserResponse;
 import com.alibou.security.repository.RoleRepository;
 import com.alibou.security.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,8 +83,10 @@ public class UserService {
         return user.getId();
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ApplicationContextException("Not found user"));
+    @Transactional
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
     public UserResponse blockUser(long id) {

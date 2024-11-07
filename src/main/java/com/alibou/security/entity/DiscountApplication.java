@@ -42,5 +42,4 @@ public class DiscountApplication {
 
     @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
-
 }
