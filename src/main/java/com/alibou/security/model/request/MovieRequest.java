@@ -27,6 +27,7 @@ public class MovieRequest {
     String genre;
     Date releaseDate;
     String posterUrl;
+    String thumbnailUrl;
     String country;
     String summary;
     String trailerUrl;

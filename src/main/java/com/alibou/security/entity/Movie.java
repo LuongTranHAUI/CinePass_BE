@@ -45,6 +45,9 @@ public class Movie {
     @Column(name = "poster_url")
     private String posterUrl;
 
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
+
     @Column(name = "release_date")
     private LocalDateTime releaseDate;
 
