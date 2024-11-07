@@ -19,5 +19,5 @@ public interface MovieMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    void updateMovie(@MappingTarget Movie movies, MovieRequest request);
+    void updateMovie(@MappingTarget Movie movie, MovieRequest request);
 }

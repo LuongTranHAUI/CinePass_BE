@@ -21,6 +21,7 @@ public class MovieResponse {
     String genre;
     LocalDateTime releaseDate;
     String posterUrl;
+    String thumbnailUrl;
     String country;
     String summary;
     String trailerUrl;
