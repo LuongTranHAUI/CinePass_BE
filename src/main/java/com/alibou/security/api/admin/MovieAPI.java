@@ -11,8 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/management/movies")
@@ -28,8 +30,18 @@ public class MovieAPI {
     MovieMapper movieMapper;
 
     @PostMapping
-    public ResponseEntity<?> addMovie(@RequestBody MovieRequest movieRequest) {
+    public ResponseEntity<?> addMovie(@RequestPart("movieRequest") MovieRequest movieRequest,
+                                      @RequestPart("posterUrl") MultipartFile image,
+                                      @RequestPart("thumbnailUrl") MultipartFile thumbnailUrl,
+                                      @RequestPart("trailerUrl") MultipartFile trailerUrl) {
         try {
+            String base64Image = movieService.encodeImageToBase64(image);
+            String base64Thumbnail = movieService.encodeImageToBase64(thumbnailUrl);
+            String base64Trailer = movieService.encodeImageToBase64(trailerUrl);
+
+            movieRequest.setPosterUrl(base64Image);
+            movieRequest.setThumbnailUrl(base64Thumbnail);
+            movieRequest.setTrailerUrl(base64Trailer);
 
             MovieResponse movieResponse = movieService.addMovie(movieRequest);
             logger.info("Movie added successfully: {}",movieRequest);
