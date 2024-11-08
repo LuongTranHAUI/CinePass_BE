@@ -18,13 +18,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.channels.MulticastChannel;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -119,7 +122,15 @@ public class MovieService {
         movieRepository.deleteById(id);
     }
 
-    public MovieResponse addMovie(MovieRequest request) {
+    public String encodeImageToBase64(MultipartFile image) throws IOException {
+
+        byte[] bytes = image.getBytes();
+
+        String encodedImage = Base64.getEncoder().encodeToString(bytes);
+        return encodedImage;
+    }
+
+    public MovieResponse addMovie(MovieRequest request) throws IOException {
 
         if (movieRepository.existsByTitle(request.getTitle())) {
             throw new ApplicationContextException("Movie already exists");
@@ -131,6 +142,16 @@ public class MovieService {
         movie.setCreatedAt(currentTime.toLocalDateTime());
         movie.setUpdatedAt(currentTime.toLocalDateTime());
         movie.setCreatedBy(userService.getCurrentUserId());
+
+        String imagePath = request.getPosterUrl();
+//        String base64Image = encodeImageToBase64(imagePath);
+        movie.setPosterUrl(imagePath);
+
+        String thumbnailPath = request.getThumbnailUrl();
+        movie.setThumbnailUrl(thumbnailPath);
+
+        String trailerPath = request.getTrailerUrl();
+        movie.setTrailerUrl(trailerPath);
 
         try {
             Movie savedMovie = movieRepository.save(movie);

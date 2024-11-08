@@ -4,6 +4,13 @@ spring:
     username: root
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB
+#  tomcat:
+#    max-http-post-size: 20971520
   jpa:
     hibernate:
       ddl-auto: update
@@ -27,3 +34,5 @@ application:
       expiration: 86400000 # a day
       refresh-token:
         expiration: 604800000 # 7 days
+
+
