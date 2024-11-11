@@ -9,10 +9,7 @@ import com.alibou.security.model.request.MovieRequest;
 import com.alibou.security.model.response.MovieResponse;
 import com.alibou.security.model.response.MovieReviewResponse;
 import com.alibou.security.model.response.ShowtimeResponse;
-import com.alibou.security.repository.DiscountApplicationRepository;
-import com.alibou.security.repository.MovieRepository;
-import com.alibou.security.repository.MovieReviewRepository;
-import com.alibou.security.repository.ShowTimeRepository;
+import com.alibou.security.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
@@ -48,6 +45,8 @@ public class MovieService {
     private UserService userService;
     @Autowired
     private DiscountApplicationRepository discountApplicationRepository;
+    @Autowired
+    private TicketRepository ticketRepository;
 
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
@@ -112,9 +111,11 @@ public class MovieService {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new ApplicationContextException("Movie not found"));
 
-        // Delete associated showtimes
-        showTimeRepository.deleteByMovieId(movie.getId());
 
+        // Delete associated showtimes
+        ticketRepository.setShowtimeIdToNull(movie.getId());
+        showTimeRepository.setMovieIdToNull(movie.getId());
+        movieReviewRepository.deleteByMovieId(movie.getId());
         // Delete movie
         movieRepository.deleteById(id);
     }

@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -39,13 +36,13 @@ public class Movie {
     @Column(columnDefinition = "TEXT")
     private String summary;
 
-    @Column(name = "trailer_url")
+    @Column(name = "trailer_url", columnDefinition = "LONGTEXT")
     private String trailerUrl;
 
-    @Column(name = "poster_url")
+    @Column(name = "poster_url", columnDefinition = "LONGTEXT")
     private String posterUrl;
 
-    @Column(name = "thumbnail_url")
+    @Column(name = "thumbnail_url", columnDefinition = "LONGTEXT")
     private String thumbnailUrl;
 
     @Column(name = "release_date")
@@ -68,12 +65,13 @@ public class Movie {
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
     @JsonIgnoreProperties("movie")
+    @ToString.Exclude
     private Set<MovieReview> reviews;
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "movie", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JsonManagedReference
     @JsonIgnoreProperties("movie")
-    @JsonIgnore
+    @ToString.Exclude
     private Set<Showtime> showtimes;
 
     @Override

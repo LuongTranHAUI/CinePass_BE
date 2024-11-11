@@ -2,6 +2,7 @@ package com.alibou.security.repository;
 
 import com.alibou.security.entity.Showtime;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,4 +20,12 @@ public interface ShowTimeRepository extends JpaRepository<Showtime, Long> {
 
     @Query("SELECT s.showTime FROM Showtime s WHERE s.movie.id = :movieId")
     List<LocalDateTime> findShowtimesByMovieId(@Param("movieId") Long movieId);
+
+    @Modifying
+    @Query("UPDATE Showtime s SET s.movie = null WHERE s.movie.id = :movieId")
+    void setMovieIdToNull(@Param("movieId") Long movieId);
+
+//    @Modifying
+//    @Query("UPDATE Showtime s SET s.movie = null WHERE s.movie.id = :movieId")
+//    void setMovieIdToNull(@Param("movieId") Long movieId);
 }

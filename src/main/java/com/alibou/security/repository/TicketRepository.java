@@ -4,6 +4,7 @@ import com.alibou.security.entity.Showtime;
 import com.alibou.security.entity.Ticket;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     boolean existsByShowtimeIdAndSeatNumber(@Param("showtimeId") Long showtimeId, @Param("seatNumber") String seatNumber);
 
     List<Ticket> findAllByUserId(Long userId);
+
+    @Modifying
+    @Query("UPDATE Ticket t set t.showtime = null WHERE t.showtime.id IN (SELECT s.id FROM Showtime s WHERE s.movie.id = :movieId)")
+    void setShowtimeIdToNull(@Param("movieId") Long movieId);
 }
