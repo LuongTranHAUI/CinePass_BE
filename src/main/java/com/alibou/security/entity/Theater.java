@@ -45,11 +45,11 @@ public class Theater {
     @Column(name = "updated_by", updatable = false)
     private Long updatedBy;
 
-    @OneToMany(mappedBy = "theater")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "theater")
     @JsonManagedReference
     private Set<Hall> halls;
 
-    @OneToMany(mappedBy = "theater")
-    @JsonBackReference
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "theater")
+    @JsonManagedReference
     private Set<Showtime> showtimes;
 }

@@ -8,7 +8,6 @@ import com.alibou.security.mapper.ShowtimeMapper;
 import com.alibou.security.model.request.ShowtimeRequest;
 import com.alibou.security.model.response.ShowtimeResponse;
 import com.alibou.security.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,22 +16,11 @@ import java.util.List;
 
 @Service
 public class ShowtimeService {
-    @Autowired
     ShowtimeMapper showtimeMapper;
-
-    @Autowired
     ShowTimeRepository showTimeRepository;
-
-    @Autowired
     MovieRepository movieRepository;
-
-    @Autowired
     TheaterRepository theaterRepository;
-
-    @Autowired
     TicketRepository ticketRepository;
-
-    @Autowired
     HallRepository hallRepository;
 
     public List<Showtime> getAllShowtime(){ return showTimeRepository.findAll();}
@@ -69,7 +57,6 @@ public class ShowtimeService {
             throw new ApplicationContextException("Hall, Movie, or Theater information is missing.");
         }
 
-        // Tìm các đối tượng Hall, Movie, Theater từ cơ sở dữ liệu
         Hall hall = hallRepository.findById(request.getHallId())
                 .orElseThrow(() -> new ApplicationContextException("Hall not found"));
         Movie movie = movieRepository.findById(request.getMovieId())
