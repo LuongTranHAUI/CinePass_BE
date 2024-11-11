@@ -21,4 +21,6 @@ public interface MovieReviewRepository extends JpaRepository<MovieReview, Long> 
 
     @Query("SELECT s.content FROM MovieReview s WHERE s.movie.id = :movieId")
     List<String> findMovieReviewByMovieId(@Param("movieId") Long movieId);
+
+    void deleteByMovieId(Long movieId);
 }
