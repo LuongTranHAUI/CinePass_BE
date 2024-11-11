@@ -30,18 +30,8 @@ public class MovieAPI {
     MovieMapper movieMapper;
 
     @PostMapping
-    public ResponseEntity<?> addMovie(@RequestPart("movieRequest") MovieRequest movieRequest,
-                                      @RequestPart("posterUrl") MultipartFile image,
-                                      @RequestPart("thumbnailUrl") MultipartFile thumbnailUrl,
-                                      @RequestPart("trailerUrl") MultipartFile trailerUrl) {
+    public ResponseEntity<?> addMovie(@RequestBody MovieRequest movieRequest) {
         try {
-            String base64Image = movieService.encodeImageToBase64(image);
-            String base64Thumbnail = movieService.encodeImageToBase64(thumbnailUrl);
-            String base64Trailer = movieService.encodeImageToBase64(trailerUrl);
-
-            movieRequest.setPosterUrl(base64Image);
-            movieRequest.setThumbnailUrl(base64Thumbnail);
-            movieRequest.setTrailerUrl(base64Trailer);
 
             MovieResponse movieResponse = movieService.addMovie(movieRequest);
             logger.info("Movie added successfully: {}",movieRequest);

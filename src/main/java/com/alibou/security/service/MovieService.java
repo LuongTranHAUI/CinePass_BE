@@ -123,13 +123,6 @@ public class MovieService {
         movieRepository.deleteById(id);
     }
 
-    public String encodeImageToBase64(MultipartFile image) throws IOException {
-
-        byte[] bytes = image.getBytes();
-
-        String encodedImage = Base64.getEncoder().encodeToString(bytes);
-        return encodedImage;
-    }
 
     public MovieResponse addMovie(MovieRequest request) throws IOException {
 
@@ -144,15 +137,6 @@ public class MovieService {
         movie.setUpdatedAt(currentTime.toLocalDateTime());
         movie.setCreatedBy(userService.getCurrentUserId());
 
-        String imagePath = request.getPosterUrl();
-//        String base64Image = encodeImageToBase64(imagePath);
-        movie.setPosterUrl(imagePath);
-
-        String thumbnailPath = request.getThumbnailUrl();
-        movie.setThumbnailUrl(thumbnailPath);
-
-        String trailerPath = request.getTrailerUrl();
-        movie.setTrailerUrl(trailerPath);
 
         try {
             Movie savedMovie = movieRepository.save(movie);
