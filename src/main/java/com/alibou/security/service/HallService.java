@@ -29,6 +29,7 @@ public class HallService {
             throw new IllegalArgumentException("Hall's name was exist");
         }
         var hall = generalMapper.mapToEntity(request, Hall.class);
+        hall.setId(null);
         hall.setCreatedBy(userService.getCurrentUserId());
         hall.setCreatedAt(LocalDateTime.now());
         hall.setTheater(theaterRepository.findById(request.getTheaterId()).orElseThrow(() -> new IllegalArgumentException("Invalid theater ID")));
