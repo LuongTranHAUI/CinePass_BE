@@ -14,15 +14,13 @@ import java.util.Set;
 public class MovieResponse {
 
     String title;
-    String description;
     String director;
     String actor;
-    int duration;
+    int runTime;
     String genre;
     LocalDateTime releaseDate;
     String posterUrl;
     String thumbnailUrl;
-    String country;
     String summary;
     String trailerUrl;
     LocalDateTime createdAt;

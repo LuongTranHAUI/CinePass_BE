@@ -20,15 +20,13 @@ public class MovieRequest {
 
     Long id;
     String title;
-    String description;
     String director;
     String actor;
-    int duration;
+    int runTime;
     String genre;
     Date releaseDate;
     String posterUrl;
     String thumbnailUrl;
-    String country;
     String summary;
     String trailerUrl;
     LocalDateTime createdAt;

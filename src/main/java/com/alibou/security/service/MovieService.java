@@ -65,30 +65,40 @@ public class MovieService {
 
         movie.setRating(averageRating);
         Movie savedMovie = movieRepository.save(movie);
-        movieMapper.toMovieResponse(savedMovie);
+//        movieMapper.toMovieResponse(savedMovie);
+        MovieResponse response = movieMapper.toMovieResponse(savedMovie);
 
-        List<LocalDateTime> showtimes = showTimeRepository.findShowtimesByMovieId(id);
-
-        MovieResponse response = movieMapper.toMovieResponse(movie);
-
-        // Chuyển đổi LocalDateTime thành ShowtimeResponse
+        List<Showtime> showtimes = showTimeRepository.findShowtimesByMovieId(id);
         Set<ShowtimeResponse> showtimeResponses = showtimes.stream()
                 .map(showTime -> {
                     ShowtimeResponse showtimeResponse = new ShowtimeResponse();
-                    showtimeResponse.setShowTime(showTime);
+                    showtimeResponse.setShowTime(showTime.getShowTime());
+                    showtimeResponse.setMovieTitle(showTime.getMovie().getTitle());
+                    // Chỉ gán "N/A" nếu không có dữ liệu thực tế
+                    showtimeResponse.setTheaterName(showTime.getTheater().getName());
+                    showtimeResponse.setHallName(showTime.getHall().getName());
                     return showtimeResponse;
                 })
                 .collect(Collectors.toSet());
-
         response.setShowtimes(showtimeResponses);
 
-        List<?> movieReviews = movieReviewRepository.findMovieReviewByMovieId(id);
-        Set<MovieReviewResponse> movieReviewResponses = movieReviews.stream().map(movieReview -> {
-            MovieReviewResponse movieReviewResponse = new MovieReviewResponse();
-            movieReviewResponse.setContent((String) movieReview);
-            return movieReviewResponse;
-        }).collect(Collectors.toSet());
-        response.setReviews(movieReviewResponses);
+        // Lấy và ánh xạ reviews, trả về Set rỗng nếu không có review nào
+        List<MovieReview> movieReviews = movieReviewRepository.findMovieReviewByMovieId(id);
+        Set<MovieReviewResponse> movieReviewResponses = movieReviews.stream()
+                .map(movieReview -> {
+                    MovieReviewResponse movieReviewResponse = new MovieReviewResponse();
+                    movieReviewResponse.setUsername(movieReview.getUser().getUsername());
+                    movieReviewResponse.setContent(movieReview.getContent());
+                    movieReviewResponse.setMovieTitle(movieReview.getMovie().getTitle());
+                    movieReviewResponse.setRating(movieReview.getRating());
+                    movieReviewResponse.setCreatedAt(movieReview.getCreatedAt());
+                    movieReviewResponse.setUpdatedAt(movieReview.getUpdatedAt());
+                    movieReviewResponse.setCreatedBy(movieReview.getCreatedBy());
+                    movieReviewResponse.setUpdatedBy(movieReview.getUpdatedBy());
+                    return movieReviewResponse;
+                })
+                .collect(Collectors.toSet());
+        response.setReviews(movieReviewResponses.isEmpty() ? Collections.emptySet() : movieReviewResponses);
 
         return response;
     }

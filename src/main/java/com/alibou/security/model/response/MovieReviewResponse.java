@@ -18,8 +18,8 @@ public class MovieReviewResponse {
 //    User user;
 //    @ToString.Exclude
 //    Movie movie;
-    Long userId;
-    Long movieId;
+    String username;
+    String movieTitle;
     String content;
     Double rating;
     LocalDateTime createdAt = LocalDateTime.now();

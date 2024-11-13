@@ -4,6 +4,7 @@ import com.alibou.security.entity.Showtime;
 import com.alibou.security.mapper.ShowtimeMapper;
 import com.alibou.security.model.request.ShowtimeRequest;
 import com.alibou.security.model.response.ShowtimeResponse;
+import com.alibou.security.model.response.interfaces.ShowtimeResponseInterface;
 import com.alibou.security.service.ShowtimeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,14 +43,14 @@ public class ShowtimeAPI {
     }
 
     @GetMapping
-    public ResponseEntity<List<ShowtimeResponse>> getShowtimeList() {
+    public ResponseEntity<List<ShowtimeResponseInterface>> getShowtimeList() {
         try {
-            List<Showtime> showtimes = showtimeService.getAllShowtime();
-            List<ShowtimeResponse> showtimeResponses = showtimes.stream()
-                    .map(showtimeMapper::toshowtimeResponse) // Chuyển `Showtime` thành `ShowtimeResponse`
-                    .collect(Collectors.toList());
+            List<ShowtimeResponseInterface> showtimes = showtimeService.getAllShowtime();
+//            List<ShowtimeResponse> showtimeResponses = showtimes.stream()
+//                    .map(showtimeMapper::toshowtimeResponse) // Chuyển `Showtime` thành `ShowtimeResponse`
+//                    .collect(Collectors.toList());
             logger.info("Showtime list retrieved successfully");
-            return ResponseEntity.status(200).body(showtimeResponses);
+            return ResponseEntity.status(200).body(showtimes);
         } catch (Exception e) {
             logger.error("Error getting showtime: {}", e.getMessage());
             return ResponseEntity.status(500).body(null);

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,4 +27,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Modifying
     @Query("UPDATE Ticket t set t.showtime = null WHERE t.showtime.id IN (SELECT s.id FROM Showtime s WHERE s.movie.id = :movieId)")
     void setShowtimeIdToNull(@Param("movieId") Long movieId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Ticket t set t.showtime = null WHERE t.showtime.id IN (SELECT s.id FROM Showtime s WHERE  s.id IN :showtimeId)")
+    void setShowtimeIdToNullInDeleteShowtime(@Param("showtimeId") List <Long> showtimeId);
 }

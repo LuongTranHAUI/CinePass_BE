@@ -16,9 +16,9 @@ public interface MovieReviewMapper {
     MovieReview toMovieReview(MovieReviewRequest request);
 
 //    MovieResponse toMovieResponse(Movie movie);
-    @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "movieId", source = "movie.id")
-   MovieReviewResponse toMovieReviewResponse(MovieReview movieReview);
+    @Mapping(target = "username", source = "movieReview.user.username")
+    @Mapping(target = "movieTitle", source = "movieReview.movie.title")
+    MovieReviewResponse toMovieReviewResponse(MovieReview movieReview);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
