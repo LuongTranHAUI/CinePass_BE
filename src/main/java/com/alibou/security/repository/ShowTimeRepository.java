@@ -18,9 +18,10 @@ public interface ShowTimeRepository extends JpaRepository<Showtime, Long> {
     Optional<Showtime> findById(Long id);
     boolean existsByHallId(long id);
     boolean existsByShowTime(LocalDateTime showtime);
+    boolean existsByTheaterId(long id);
     void deleteByMovieId(Long movieId);
 
-    @Query("SELECT s.showTime AS showTime, s.movie.title AS movieTitle, s.theater.name AS theaterName, s.hall.name AS hallName FROM Showtime s")
+    @Query("SELECT s.showTime AS showTime,s.id AS id, s.movie.title AS movieTitle, s.theater.name AS theaterName, s.hall.name AS hallName FROM Showtime s")
     List<ShowtimeResponseInterface> findAllShowTimes();
 
     @Query("SELECT s FROM Showtime s WHERE s.movie.id = :movieId")

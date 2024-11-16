@@ -15,10 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -97,47 +100,63 @@ public class TicketService {
 
     }
 
-    public List<Ticket> getAllTicket() {
-        return ticketRepository.findAll();
+    public List<TicketResponse> getAllTicket() {
+        return ticketRepository.findAllTickets();
     }
 
     public TicketResponse getTicket(long id) {
-        int n = 0;
         Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ApplicationContextException("Ticket does not exist"));
 
         return ticketMapper.toTicketResponse(ticket);
     }
 
-    public ResponseEntity<List<Ticket>> CheckExpiredTicket(Ticket ticket, long userId) {
+    @Transactional
+    @Scheduled(cron = "* * * * * ?")
+    public ResponseEntity<List<TicketResponse>> CheckExpiredTicket() {
+        List<TicketResponse> ticketResponses = ticketRepository.findAllTickets();
+        List<TicketResponse> expiredTickets = new ArrayList<>();
 
-        if (ticket == null || ticket.getShowtime() == null) {
-            logger.error("Ticket or Showtime is null");
+        if(ticketResponses.isEmpty()) {
+            logger.info("Tickets list is empty");
             return ResponseEntity.ok(Collections.emptyList());
         }
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime showtime = ticket.getShowtime().getShowTime();
 
-        if (now.isBefore(showtime)) {
-            if (ticket.getStatus() == TicketStatus.USED) {
-                logger.info("TicketID: " + ticket.getId() + " is used");
-                return ResponseEntity.ok(Collections.emptyList());
-            }else{
-                return ResponseEntity.ok(Collections.emptyList());
+        for(TicketResponse ticketResponse : ticketResponses) {
+            if(ticketResponse == null || ticketResponse.getShowTime() == null){
+                logger.warn("Ticket or Showtime is null, skipping ...");
+               continue;
             }
-        } else if (now.isAfter(showtime) && ticket.getStatus() != TicketStatus.EXPIRED) {
-            if(ticket.getStatus() != TicketStatus.USED) {
-                ticket.setStatus(TicketStatus.EXPIRED);
-                ticket.setUpdatedAt(LocalDateTime.now());
-                ticketRepository.save(ticket);
-                logger.info("TicketID: " + ticket.getId() + " has been expired");
-                return ResponseEntity.ok(Collections.singletonList(ticket));
-            }else {
-                return ResponseEntity.ok(Collections.emptyList());
+
+            LocalDateTime showtime = ticketResponse.getShowTime();
+
+            if(now.isBefore(showtime)){
+                if(ticketResponse.getStatus() == TicketStatus.USED){
+                    logger.info("Ticket is used");
+                }else {
+                    return ResponseEntity.ok(Collections.emptyList());
+                }
+            } else if (now.isAfter(showtime) && ticketResponse.getStatus() != TicketStatus.EXPIRED) {
+                if(ticketResponse.getStatus() != TicketStatus.USED){
+
+                    Ticket ticket = ticketRepository.findById(ticketResponse.getId()).orElseThrow(() -> new ApplicationContextException("Ticket does not exist"));
+                     ticket.setStatus(TicketStatus.EXPIRED);
+                     ticket.setUpdatedAt(LocalDateTime.now());
+                     ticketRepository.save(ticket);
+                     logger.info("Ticket with ID" + ticket.getId()+ " has been mark as EXPIRED");
+                     expiredTickets.add(ticketMapper.toTicketResponse(ticket));
+
+                }
             }
         }
 
-        return ResponseEntity.ok(Collections.emptyList());
+        if(expiredTickets.isEmpty()){
+            logger.info("Tickets list is empty");
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+        return ResponseEntity.ok(expiredTickets);
     }
 
     public TicketResponse CheckAndUpdateTicketStatus(long ticketId, TicketStatus status, long userId) {
@@ -173,7 +192,7 @@ public class TicketService {
 
     }
 
-    public List<Ticket> getTicketByUserId(long userId) {
+    public List<TicketResponse> getTicketByUserId(long userId) {
         return ticketRepository.findAllByUserId(userId);
     }
 }

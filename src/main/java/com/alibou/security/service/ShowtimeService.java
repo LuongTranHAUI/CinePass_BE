@@ -93,7 +93,7 @@ public class ShowtimeService {
                 .orElseThrow(() -> new ApplicationContextException("Theater not found"));
 
 
-        if (showTimeRepository.existsByHallId(hall.getId()) && showTimeRepository.existsByShowTime(request.getShowTime())) {
+        if (showTimeRepository.existsByHallId(hall.getId()) && showTimeRepository.existsByShowTime(request.getShowTime()) && showTimeRepository.existsByTheaterId(theater.getId())) {
            throw new ApplicationContextException("Had the movie") ;
         }
 

@@ -2,7 +2,9 @@ package com.alibou.security.repository;
 
 import com.alibou.security.entity.Showtime;
 import com.alibou.security.entity.Ticket;
+import com.alibou.security.model.response.TicketResponse;
 import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -22,7 +24,26 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END FROM Ticket t WHERE t.showtime.id = :showtimeId AND t.seatNumber = :seatNumber")
     boolean existsByShowtimeIdAndSeatNumber(@Param("showtimeId") Long showtimeId, @Param("seatNumber") String seatNumber);
 
-    List<Ticket> findAllByUserId(Long userId);
+    @Query("SELECT new com.alibou.security.model.response.TicketResponse(t.id, t.seatNumber, t.ticketType, t.price, " +
+            "t.serviceFee, t.status, t.createdAt, t.updatedAt, t.createdBy, t.updatedBy, " +
+            "s.showTime, m.title, th.name, h.name) " +
+            "FROM Ticket t " +
+            "LEFT JOIN t.showtime s " +
+            "LEFT JOIN s.movie m " +
+            "LEFT JOIN s.theater th " +
+            "LEFT JOIN s.hall h " +
+            "WHERE t.user.id = :userId")
+    List<TicketResponse> findAllByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT new com.alibou.security.model.response.TicketResponse(t.id, t.seatNumber, t.ticketType, t.price, " +
+            "t.serviceFee, t.status, t.createdAt, t.updatedAt, t.createdBy, t.updatedBy, " +
+            "s.showTime, m.title, th.name, h.name) " +
+            "FROM Ticket t " +
+            "LEFT JOIN t.showtime s " +
+            "LEFT JOIN s.movie m " +
+            "LEFT JOIN s.theater th " +
+            "LEFT JOIN s.hall h ")
+    List<TicketResponse> findAllTickets();
 
     @Modifying
     @Query("UPDATE Ticket t set t.showtime = null WHERE t.showtime.id IN (SELECT s.id FROM Showtime s WHERE s.movie.id = :movieId)")

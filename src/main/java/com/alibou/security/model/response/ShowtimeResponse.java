@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ShowtimeResponse {
+     Long id;
      LocalDateTime showTime;
      String movieTitle;
      String theaterName;

@@ -2,6 +2,7 @@ package com.alibou.security.api.user;
 
 import com.alibou.security.entity.Ticket;
 import com.alibou.security.enums.TicketStatus;
+import com.alibou.security.mapper.TicketMapper;
 import com.alibou.security.model.request.TicketRequest;
 import com.alibou.security.model.response.TicketResponse;
 import com.alibou.security.repository.TicketRepository;
@@ -14,6 +15,7 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,6 +27,7 @@ public class TicketAPI {
     private final TicketService ticketService;
     private final Logger logger = LoggerFactory.getLogger(TicketAPI.class);
     private final TicketRepository ticketRepository;
+    private final TicketMapper ticketMapper;
 
     @PostMapping
     public ResponseEntity<?> createTick(@RequestBody TicketRequest ticketRequest) {
@@ -41,9 +44,9 @@ public class TicketAPI {
     }
 
     @GetMapping
-    public ResponseEntity<List<Ticket>> getAllTickets() {
+    public ResponseEntity<List<TicketResponse>> getAllTickets() {
         try {
-            List<Ticket> tickets = ticketService.getAllTicket();
+            List<TicketResponse> tickets = ticketService.getAllTicket();
             return ResponseEntity.ok(tickets);
         } catch (Throwable e) {
             logger.error("Error getting all tickets.", e.getMessage());
@@ -93,25 +96,6 @@ public class TicketAPI {
         }
     }
 
-    @GetMapping("/expired")
-    public ResponseEntity<?> getExpiredTicket( @RequestHeader("UserId") Long userId) {
-//        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ApplicationContextException("Ticket not found"));
-            List<Ticket> tickets = ticketService.getTicketByUserId(userId);
-        for (Ticket ticket : tickets) {
-            ticketService.CheckExpiredTicket(ticket, userId);
-        }
-        return ResponseEntity.ok(tickets);
-//        if (ticket.getStatus() == TicketStatus.EXPIRED) {
-//            return ResponseEntity.ok("Ticket expired");
-//        } else if (ticket.getStatus() == TicketStatus.USED) {
-//            return ResponseEntity.ok("Ticket used");
-//        } else {
-//            return ResponseEntity.ok("Ticket is available");
-//        }
-
-//        return ResponseEntity.ok(ticketMapper.toTicketResponse(ticket));
-    }
-
     @PutMapping("/status/{id}")
     public ResponseEntity<?> updateTicketStatus(@PathVariable long id, @RequestBody TicketStatus status, @RequestHeader("UserId") Long userId) {
 
@@ -122,7 +106,7 @@ public class TicketAPI {
 
     @GetMapping("/history/{userId}")
     public ResponseEntity<?> getTicketHistory(@PathVariable long userId) {
-        List<Ticket> tickets = ticketService.getTicketByUserId(userId);
+        List<TicketResponse> tickets = ticketService.getTicketByUserId(userId);
         if (tickets.isEmpty()) {
             return ResponseEntity.ok("Ticket not found");
         }

@@ -29,6 +29,7 @@ public class TicketRequest {
 //    DiscountApplication discountApplication;
     String seatNumber;
     String ticketType;
+    BigDecimal price = BigDecimal.ZERO;
     BigDecimal serviceFee = BigDecimal.ZERO;
     TicketStatus status;
     LocalDateTime createdAt = LocalDateTime.now();
