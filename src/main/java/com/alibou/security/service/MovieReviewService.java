@@ -34,9 +34,9 @@ public class MovieReviewService {
     @Autowired
     private TicketRepository ticketRepository;
 
-    public List<MovieReview> findAllMovieReviews() {
+    public List<MovieReviewResponse> findAllMovieReviews() {
 //        List<MovieReview> movieReviews = movieReviewRepository.findAll();
-        return movieReviewRepository.findAll();
+        return movieReviewRepository.findAllReviews();
     }
 
     public MovieReviewResponse findById(long id) {

@@ -26,9 +26,9 @@ public class MovieReviewAPI {
     private final TicketService ticketService;
 
     @GetMapping
-    public ResponseEntity<List<MovieReview>> getMovieReviews() {
+    public ResponseEntity<List<MovieReviewResponse>> getMovieReviews() {
         try {
-            List<MovieReview> movieReviews = movieReviewService.findAllMovieReviews();
+            List<MovieReviewResponse> movieReviews = movieReviewService.findAllMovieReviews();
             return ResponseEntity.ok(movieReviews);
         } catch (Exception e) {
             logger.error("Error show all comment.", e.getMessage());

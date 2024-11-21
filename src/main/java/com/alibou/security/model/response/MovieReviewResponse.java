@@ -18,6 +18,7 @@ public class MovieReviewResponse {
 //    User user;
 //    @ToString.Exclude
 //    Movie movie;
+    Long id;
     String username;
     String movieTitle;
     String content;
@@ -26,4 +27,17 @@ public class MovieReviewResponse {
     LocalDateTime updatedAt = LocalDateTime.now();
     Long createdBy;
     Long updatedBy;
+
+    public MovieReviewResponse(Long id, String content, LocalDateTime createdAt, Long createdBy, Double rating,
+                               LocalDateTime updatedAt, Long updatedBy, String movieTitle, String username) {
+        this.id = id;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.rating = rating;
+        this.updatedAt = updatedAt;
+        this.updatedBy = updatedBy;
+        this.movieTitle = movieTitle;
+        this.username = username;
+    }
 }
