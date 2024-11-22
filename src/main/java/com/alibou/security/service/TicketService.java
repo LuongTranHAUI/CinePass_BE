@@ -111,7 +111,7 @@ public class TicketService {
     }
 
     @Transactional
-    @Scheduled(cron = "* * * * * ?")
+    @Scheduled(cron = "* * 1 * * ?")
     public ResponseEntity<List<TicketResponse>> CheckExpiredTicket() {
         List<TicketResponse> ticketResponses = ticketRepository.findAllTickets();
         List<TicketResponse> expiredTickets = new ArrayList<>();

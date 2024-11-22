@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/management/payment-methods")
+@RequestMapping("/api/admin/payment-methods")
 @RequiredArgsConstructor
 public class PaymentMethodAPI {
     private static final Logger logger = LoggerFactory.getLogger(DiscountAPI.class);

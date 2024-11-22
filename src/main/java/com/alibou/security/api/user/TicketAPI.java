@@ -6,6 +6,7 @@ import com.alibou.security.mapper.TicketMapper;
 import com.alibou.security.model.request.TicketRequest;
 import com.alibou.security.model.response.TicketResponse;
 import com.alibou.security.repository.TicketRepository;
+import com.alibou.security.service.QRCodeGeneratorService;
 import com.alibou.security.service.TicketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class TicketAPI {
     private final Logger logger = LoggerFactory.getLogger(TicketAPI.class);
     private final TicketRepository ticketRepository;
     private final TicketMapper ticketMapper;
+    QRCodeGeneratorService QRCodeGenerator;
 
     @PostMapping
     public ResponseEntity<?> createTick(@RequestBody TicketRequest ticketRequest) {
@@ -65,6 +67,19 @@ public class TicketAPI {
         } catch (Throwable e) {
             logger.error("Error getting ticket with id: {}", e.getMessage(), id);
             return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{ticketId}/qrcode")
+    public ResponseEntity<String> generateTicketQRCode(@PathVariable Long ticketId) {
+        try {
+            TicketResponse ticket = ticketService.getTicket(ticketId);
+            String qrCodeText = "Ticket ID: " + ticket.getId() + ", Seat: " + ticket.getSeatNumber();
+            String filePath = "qrcodes/ticket_" + ticket.getId() + ".png";
+            QRCodeGenerator.generateQRCodeImage(qrCodeText, 350, 350, filePath);
+            return ResponseEntity.ok("QR Code generated at: " + filePath);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error generating QR Code: " + e.getMessage());
         }
     }
 
